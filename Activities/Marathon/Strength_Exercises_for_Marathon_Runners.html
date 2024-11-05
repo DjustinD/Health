@@ -14,63 +14,79 @@
             padding: 20px;
             line-height: 1.6;
         }
-
+        
         h1 {
             color: #2c3e50;
             border-bottom: 2px solid #2c3e50;
             padding-bottom: 10px;
+            font-size: 2em;
         }
-
-        h2 {
-            color: #34495e;
-            margin-top: 30px;
-        }
-
+        
         /* Style for main sections (A, B, C, D) */
         ol[type="A"] {
             color: #2980b9;
             font-weight: bold;
-            font-size: medium
+            font-size: 1em;
         }
-
+        
         ol[type="A"]>li {
             margin-bottom: 15px;
         }
-
+        
         /* Style for nested numbered lists */
         ol[type="1"] {
             color: #16a085;
             font-weight: bold;
-            font-size: larger;
+            font-size: 1.25em;
             margin-top: 5px;
         }
-
+        
         /* Reset color for list content */
         ol li span {
             color: #333;
             font-weight: normal;
         }
-
+        
         /* Style for nested bullet points */
         ul {
             color: #333;
             font-weight: normal;
+            font-size: .75em;
         }
-
+        
         .exercise-category {
             background: #f8f9fa;
             padding: 5px 15px;
             margin: 10px 0;
             border-radius: 5px;
             color: #2c3e50;
-            font-size: x-large;
+            font-size: 1.5em;
             font-weight: bold;
         }
-
+        
         @media print {
             .page-break {
                 page-break-before: always;
             }
+        }
+        
+        .image-container {
+            text-align: center;
+        }
+        
+        .image-container img {
+            display: block;
+            margin: 0 auto;
+            width: 200px;
+        }
+        
+        .image-credit {
+            font-size: 0.5em;
+            color: gray;
+            max-width: 200px;
+            margin: 0 auto;
+            text-align: center;
+            word-wrap: break-word;
         }
     </style>
 </head>
@@ -80,7 +96,10 @@
     <div class="exercise-category">Lower Body Strength</div>
     <ol type="1">
         <li>Front Squats
-            <img src="Front_Squat.webp" alt="Front Squat Image" style="float:right; width:200px; margin-left:10px;">
+            <div class="image-container">
+                <img src="Front_Squat.webp" alt="Front Squat Image">
+                <p class="image-credit">Image created with OpenAI's ChatGPT</p>
+            </div>
             <ol type="A">
                 <li>Purpose:
                     <ul>
@@ -118,8 +137,10 @@
         <div class="page-break"></div>
 
         <li>Single Leg Romanian Deadlifts
-            <img src="Single_Leg_Romanian_Deadlift.webp" alt="Single Leg Deadlift Image"
-                style="float:right; width:200px; margin-left:10px;">
+            <div class="image-container">
+                <img src="Single_Leg_Romanian_Deadlift.webp" alt="Single Leg Deadlift Image">
+                <p class="image-credit">Image created with OpenAI's ChatGPT</p>
+            </div>
             <ol type="A">
                 <li>Purpose:
                     <ul>
@@ -155,7 +176,10 @@
         </li>
         <div class="page-break"></div>
         <li>The Deadlift
-            <img src="Deadlift.webp" alt="Deadlift Image" style="float:right; width:200px; margin-left:10px;">
+            <div class="image-container">
+                <img src="Deadlift.webp" alt="Deadlift Image">
+                <p class="image-credit">Image created with OpenAI's ChatGPT</p>
+            </div>
             <ol type="A">
                 <li>Purpose:
                     <ul>
@@ -192,8 +216,10 @@
         <div class="page-break"></div>
         <div class="exercise-category">Core and Stability</div>
         <li>Russian Twists
-            <img src="Russian_Twists.webp" alt="Russian Twist Image"
-                style="float:right; width:200px; margin-left:10px;">
+            <div class="image-container">
+                <img src="Russian_Twists.webp" alt="Deadlift Image">
+                <p class="image-credit">Image created with OpenAI's ChatGPT</p>
+            </div>
             <ol type="A">
                 <li>Purpose:
                     <ul>
@@ -232,8 +258,10 @@
         </li>
         <div class="page-break"></div>
         <li>Planks with Leg Lifts
-            <img src="Plank_with_Leg_Lifts.webp" alt="Planks with Leg Lifts Image"
-                style="float:right; width:200px; margin-left:10px;">
+            <div class="image-container">
+                <img src="Plank_with_Leg_Lifts.webp" alt="Planks with Leg Lifts Image">
+                <p class="image-credit">Image created with OpenAI's ChatGPT</p>
+            </div>
             <ol type="A">
                 <li>Purpose:
                     <ul>
@@ -269,8 +297,10 @@
         </li>
         <div class="page-break"></div>
         <li>Cable Woodchops
-            <img src="Cable_Woodchops.webp" alt="Cable Woodchops Image"
-                style="float:right; width:200px; margin-left:10px;">
+            <div class="image-container">
+                <img src="Cable_Woodchops.webp" alt="Cable Woodchops Image">
+                <p class="image-credit">Image created with OpenAI's ChatGPT</p>
+            </div>
             <ol type="A">
                 <li>Purpose:
                     <ul>
