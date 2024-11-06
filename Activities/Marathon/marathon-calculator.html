@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marathon Training Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .calculator {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .result {
+            background: #e0f0ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        .training-info {
+            background: #f0f8f0;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .warning {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        .time-input {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        input {
+            padding: 5px;
+            margin: 5px;
+            width: 140px;
+        }
+        label {
+            display: inline-block;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Running Training Calculator</h1>
+    
+    <div class="calculator">
+        <h2>Race Details</h2>
+        <div>
+            <label>Target Race Date:</label>
+            <input type="date" id="raceDate" value="2025-06-15" onchange="updateAll()">
+        </div>
+        <div>
+            <label>Days Remaining:</label>
+            <span id="daysRemaining"></span>
+        </div>
+        <div class="time-input">
+            <label>Target Race Time:</label>
+            <input type="number" id="hours" value="6" min="0" max="24" onchange="updateAll()"> :
+            <input type="number" id="minutes" value="00" min="0" max="59" step="1" onchange="updateAll()">
+            <span>(hours:minutes)</span>
+        </div>
+        <div>
+            <label>Distance (km):</label>
+            <input type="number" id="distance" value="42.2" step="0.1" min="1" onchange="updateAll()">
+        </div>
+    </div>
+
+    <div class="result" id="paceResults">
+        <h2>Calculated Training Paces</h2>
+        <div id="paceDisplay"></div>
+    </div>
+
+    <div id="warningArea"></div>
+
+    <div class="training-info">
+        <h2>Training Guidelines</h2>
+        <div id="trainingGuidelines"></div>
+    </div>
+
+    <script>
+        function updateAll() {
+            calculatePaces();
+            updateDaysRemaining();
+            updateTrainingGuidelines();
+        }
+
+        function calculatePaces() {
+            const hours = parseInt(document.getElementById('hours').value) || 0;
+            const minutes = parseInt(document.getElementById('minutes').value) || 0;
+            const totalMinutes = hours * 60 + minutes;
+            const distance = parseFloat(document.getElementById('distance').value);
+            
+            // Calculate race pace in min/km
+            const racePaceMinutes = totalMinutes / distance;
+            
+            // Calculate other training paces
+            const easyPace = racePaceMinutes + 1;
+            const recoveryPace = racePaceMinutes + 2;
+            const speedWorkPace = Math.max(racePaceMinutes - 1, 3); // Prevent unrealistic speeds
+            
+            // Convert to speeds in mph
+            const kmToMiles = 0.621371;
+            const racePaceMph = (60 / racePaceMinutes) * kmToMiles;
+            const easyPaceMph = (60 / easyPace) * kmToMiles;
+            const recoveryPaceMph = (60 / recoveryPace) * kmToMiles;
+            const speedWorkMph = (60 / speedWorkPace) * kmToMiles;
+            
+            // Calculate total times for each pace
+            const raceTotalTime = formatTotalTime(totalMinutes);
+            const easyTotalTime = formatTotalTime(easyPace * distance);
+            const recoveryTotalTime = formatTotalTime(recoveryPace * distance);
+            const speedTotalTime = formatTotalTime(speedWorkPace * distance);
+            
+            document.getElementById('paceDisplay').innerHTML = `
+                <p>Race Pace: ${formatPace(racePaceMinutes)}/km (${racePaceMph.toFixed(1)} mph) - Total Time: ${raceTotalTime}</p>
+                <p>Easy Training Pace: ${formatPace(easyPace)}/km (${easyPaceMph.toFixed(1)} mph) - Total Time: ${easyTotalTime}</p>
+                <p>Recovery Pace: ${formatPace(recoveryPace)}/km (${recoveryPaceMph.toFixed(1)} mph) - Total Time: ${recoveryTotalTime}</p>
+                <p>Speed Work Pace: ${formatPace(speedWorkPace)}/km (${speedWorkMph.toFixed(1)} mph) - Total Time: ${speedTotalTime}</p>
+            `;
+        }
+
+        function formatPace(paceInMinutes) {
+            const minutes = Math.floor(paceInMinutes);
+            const seconds = Math.round((paceInMinutes - minutes) * 60);
+            return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function formatTotalTime(totalMinutes) {
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = Math.round(totalMinutes % 60);
+            return `${hours}:${minutes.toString().padStart(2, '0')}`;
+        }
+
+        function updateDaysRemaining() {
+            const raceDate = new Date(document.getElementById('raceDate').value);
+            const today = new Date();
+            const diffTime = Math.abs(raceDate - today);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            document.getElementById('daysRemaining').textContent = 
+                `${diffDays} days (${Math.floor(diffDays/7)} weeks)`;
+            return diffDays;
+        }
+
+        // [Previous training guidelines functions remain the same...]
+        function updateTrainingGuidelines() {
+            const distance = parseFloat(document.getElementById('distance').value);
+            const daysRemaining = updateDaysRemaining();
+            const weeksRemaining = Math.floor(daysRemaining / 7);
+            let guidelines = '';
+            let warnings = '';
+
+            // Determine race type and minimum training time
+            let raceType, minWeeks, recommendedWeeks;
+            if (distance <= 5) {
+                raceType = "5K";
+                minWeeks = 8;
+                recommendedWeeks = 12;
+            } else if (distance <= 10) {
+                raceType = "10K";
+                minWeeks = 10;
+                recommendedWeeks = 14;
+            } else if (distance <= 21.1) {
+                raceType = "Half Marathon";
+                minWeeks = 12;
+                recommendedWeeks = 16;
+            } else {
+                raceType = "Marathon";
+                minWeeks = 16;
+                recommendedWeeks = 20;
+            }
+
+            // Warning checks
+            if (weeksRemaining < minWeeks) {
+                warnings += `<div class="warning">⚠️ Warning: ${weeksRemaining} weeks may not be enough time to safely prepare for a ${raceType}. Consider choosing a later race date or a shorter distance.</div>`;
+            }
+
+            // Base training structure
+            let trainingPhases;
+            if (weeksRemaining >= recommendedWeeks) {
+                trainingPhases = getFullTrainingPlan(raceType, weeksRemaining);
+            } else {
+                trainingPhases = getCompressedTrainingPlan(raceType, weeksRemaining);
+            }
+
+            document.getElementById('warningArea').innerHTML = warnings;
+
+            guidelines = `
+                <h3>Training Plan for ${raceType} (${weeksRemaining} weeks)</h3>
+                <div class="training-phases">
+                    ${trainingPhases}
+                </div>
+                <h3>Training Pace Guidelines</h3>
+                <ul>
+                    <li><strong>Race Pace:</strong> Use for race-specific workouts (${distance <= 10 ? '15-20%' : '10-15%'} of total training)</li>
+                    <li><strong>Easy Pace:</strong> Your primary training pace (${distance <= 10 ? '60-70%' : '70-80%'} of total training)</li>
+                    <li><strong>Recovery Pace:</strong> Use after hard workouts and long runs</li>
+                    <li><strong>Speed Work:</strong> For interval training (${distance <= 10 ? '15-20%' : '10-15%'} of training)</li>
+                </ul>
+            `;
+
+            document.getElementById('trainingGuidelines').innerHTML = guidelines;
+        }
+
+        function getFullTrainingPlan(raceType, weeks) {
+            if (raceType === "Marathon") {
+                return `
+                    <h4>Phase 1: Base Building (${Math.floor(weeks * 0.3)} weeks)</h4>
+                    <ul>
+                        <li>Focus on building aerobic base at easy pace</li>
+                        <li>Gradually increase weekly mileage</li>
+                        <li>Long runs at 25-30% of weekly distance</li>
+                    </ul>
+                    
+                    <h4>Phase 2: Strength Phase (${Math.floor(weeks * 0.3)} weeks)</h4>
+                    <ul>
+                        <li>Introduce hill training and tempo runs</li>
+                        <li>Continue building long run distance</li>
+                        <li>Begin race pace segments in long runs</li>
+                    </ul>
+
+                    <h4>Phase 3: Race Specific (${Math.floor(weeks * 0.3)} weeks)</h4>
+                    <ul>
+                        <li>Marathon-paced long runs</li>
+                        <li>Peak weekly mileage</li>
+                        <li>Regular race pace workouts</li>
+                    </ul>
+
+                    <h4>Phase 4: Taper (${Math.max(2, Math.floor(weeks * 0.1))} weeks)</h4>
+                    <ul>
+                        <li>Reduce volume but maintain intensity</li>
+                        <li>Focus on rest and recovery</li>
+                    </ul>`;
+            } else {
+                // [Previous code for other race types remains the same...]
+                return getCompressedTrainingPlan(raceType, weeks);
+            }
+        }
+
+        function getCompressedTrainingPlan(raceType, weeks) {
+            if (weeks < 8) {
+                return `
+                    <h4>Compressed Training Plan (${weeks} weeks)</h4>
+                    <ul>
+                        <li>Focus on maintaining current fitness</li>
+                        <li>Gradually introduce race pace work</li>
+                        <li>Keep most runs at easy pace</li>
+                        <li>Include one long run per week</li>
+                        <li>Taper for 3-4 days before race</li>
+                    </ul>
+                    <p><em>Note: This is a compressed plan. Consider adjusting your race goals to match your current fitness level.</em></p>`;
+            }
+            
+            return `
+                <h4>Phase 1: Quick Base (${Math.floor(weeks * 0.4)} weeks)</h4>
+                <ul>
+                    <li>Focus on consistent running</li>
+                    <li>Build weekly mileage quickly but safely</li>
+                </ul>
+
+                <h4>Phase 2: Race Specific (${Math.floor(weeks * 0.5)} weeks)</h4>
+                <ul>
+                    <li>Introduce race pace work</li>
+                    <li>Key workouts at goal pace</li>
+                </ul>
+
+                <h4>Phase 3: Mini Taper (${Math.max(1, Math.floor(weeks * 0.1))} weeks)</h4>
+                <ul>
+                    <li>Reduce volume</li>
+                    <li>Maintain some intensity</li>
+                </ul>`;
+        }
+
+        // Initialize everything
+        updateAll();
+    </script>
+</body>
+</html>
