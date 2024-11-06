@@ -124,10 +124,10 @@
             const speedTotalTime = formatTotalTime(speedWorkPace * distance);
             
             document.getElementById('paceDisplay').innerHTML = `
-                <p>Race Pace: ${formatPace(racePaceMinutes)}/km (${racePaceMph.toFixed(1)} mph) - Total Time: ${raceTotalTime}</p>
-                <p>Easy Training Pace: ${formatPace(easyPace)}/km (${easyPaceMph.toFixed(1)} mph) - Total Time: ${easyTotalTime}</p>
-                <p>Recovery Pace: ${formatPace(recoveryPace)}/km (${recoveryPaceMph.toFixed(1)} mph) - Total Time: ${recoveryTotalTime}</p>
-                <p>Speed Work Pace: ${formatPace(speedWorkPace)}/km (${speedWorkMph.toFixed(1)} mph) - Total Time: ${speedTotalTime}</p>
+                <p>Race Pace: ${formatPace(racePaceMinutes)}/km (${racePaceMph.toFixed(1)} mph) - Marathon Time: ${raceTotalTime}</p>
+                <p>Easy Training Pace: ${formatPace(easyPace)}/km (${easyPaceMph.toFixed(1)} mph) - Marathon Time: ${easyTotalTime}</p>
+                <p>Recovery Pace: ${formatPace(recoveryPace)}/km (${recoveryPaceMph.toFixed(1)} mph) - Marathon Time: ${recoveryTotalTime}</p>
+                <p>Speed Work Pace: ${formatPace(speedWorkPace)}/km (${speedWorkMph.toFixed(1)} mph) - Marathon Time: ${speedTotalTime}</p>
             `;
         }
 
