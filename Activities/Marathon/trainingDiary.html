@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Running Training Diary</title>
+
+    <!-- React and ReactDOM -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+
+    <!-- Babel for JSX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // Validation functions
+        const validateRun = (run) => {
+            const errors = {};
+
+            if (!run.date) errors.date = "Date is required";
+
+            if (!run.distance) {
+                errors.distance = "Distance is required";
+            } else if (run.distance <= 0) {
+                errors.distance = "Distance must be positive";
+            }
+
+            if (!run.timeMinutes) {
+                errors.timeMinutes = "Time is required";
+            } else if (run.timeMinutes <= 0) {
+                errors.timeMinutes = "Time must be positive";
+            }
+
+            return errors;
+        };
+
+        // CSV functions
+        const exportToCSV = (runs) => {
+            const headers = ['date', 'distance', 'timeMinutes'];
+            const csvContent = [
+                headers.join(','),
+                ...runs.map(run => headers.map(header => run[header]).join(','))
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `running_data_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        };
+
+        const parseCSV = (csvText) => {
+            const lines = csvText.split('\n');
+            const headers = lines[0].split(',');
+
+            return lines.slice(1)
+                .filter(line => line.trim())
+                .map(line => {
+                    const values = line.split(',');
+                    return {
+                        date: values[0],
+                        distance: parseFloat(values[1]),
+                        timeMinutes: parseInt(values[2])
+                    };
+                });
+        };
+
+        // Toast notification component
+        function Toast({ message, isVisible, onClose, isError }) {
+            if (!isVisible) return null;
+
+            return (
+                <div className={`fixed bottom-4 right-4 ${isError ? 'bg-red-500' : 'bg-green-500'} text-white px-6 py-3 rounded-lg shadow-lg`}>
+                    {message}
+                    <button onClick={onClose} className="ml-3 text-white font-bold">×</button>
+                </div>
+            );
+        }
+
+        // Edit Modal Component
+        function EditModal({ run, isOpen, onClose, onSave }) {
+            const [editedRun, setEditedRun] = React.useState(run);
+            const [errors, setErrors] = React.useState({});
+
+            const handleSave = () => {
+                const validationErrors = validateRun(editedRun);
+                if (Object.keys(validationErrors).length === 0) {
+                    onSave(editedRun);
+                    onClose();
+                } else {
+                    setErrors(validationErrors);
+                }
+            };
+
+            if (!isOpen) return null;
+
+            return (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-lg p-6 max-w-md w-full">
+                        <h2 className="text-xl font-bold mb-4">Edit Run</h2>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Date</label>
+                                <input
+                                    type="date"
+                                    value={editedRun.date}
+                                    onChange={e => setEditedRun({ ...editedRun, date: e.target.value })}
+                                    className="w-full p-2 border rounded"
+                                />
+                                {errors.date && <p className="text-red-500 text-sm">{errors.date}</p>}
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Distance (km)</label>
+                                <input
+                                    type="number"
+                                    step="0.1"
+                                    value={editedRun.distance}
+                                    onChange={e => setEditedRun({ ...editedRun, distance: parseFloat(e.target.value) })}
+                                    className="w-full p-2 border rounded"
+                                />
+                                {errors.distance && <p className="text-red-500 text-sm">{errors.distance}</p>}
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Time (minutes)</label>
+                                <input
+                                    type="number"
+                                    value={editedRun.timeMinutes}
+                                    onChange={e => setEditedRun({ ...editedRun, timeMinutes: parseInt(e.target.value) })}
+                                    className="w-full p-2 border rounded"
+                                />
+                                {errors.timeMinutes && <p className="text-red-500 text-sm">{errors.timeMinutes}</p>}
+                            </div>
+                            <div className="flex justify-end space-x-2">
+                                <button
+                                    onClick={onClose}
+                                    className="px-4 py-2 border rounded hover:bg-gray-100"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleSave}
+                                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                >
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function TrainingDashboard() {
+            const [runs, setRuns] = React.useState(() => {
+                try {
+                    const saved = localStorage.getItem('trainingRuns');
+                    return saved ? JSON.parse(saved) : [];
+                } catch (error) {
+                    console.error('Error loading saved runs:', error);
+                    return [];
+                }
+            });
+
+            const [newRun, setNewRun] = React.useState({
+                date: new Date().toISOString().split('T')[0],
+                distance: '',
+                timeMinutes: ''
+            });
+
+            const [showToast, setShowToast] = React.useState(false);
+            const [toastMessage, setToastMessage] = React.useState('');
+            const [isError, setIsError] = React.useState(false);
+            const [editingRun, setEditingRun] = React.useState(null);
+            const [validationErrors, setValidationErrors] = React.useState({});
+
+            React.useEffect(() => {
+                try {
+                    localStorage.setItem('trainingRuns', JSON.stringify(runs));
+                } catch (error) {
+                    console.error('Error saving runs:', error);
+                    showNotification('Error saving data!', true);
+                }
+            }, [runs]);
+
+            const showNotification = (message, error = false) => {
+                setToastMessage(message);
+                setIsError(error);
+                setShowToast(true);
+                setTimeout(() => setShowToast(false), 3000);
+            };
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                const errors = validateRun(newRun);
+                if (Object.keys(errors).length === 0) {
+                    try {
+                        setRuns([...runs, newRun]);
+                        setNewRun({
+                            date: new Date().toISOString().split('T')[0],
+                            distance: '',
+                            timeMinutes: ''
+                        });
+                        showNotification('Run saved successfully!');
+                        setValidationErrors({});
+                    } catch (error) {
+                        console.error('Error adding run:', error);
+                        showNotification('Error adding run!', true);
+                    }
+                } else {
+                    setValidationErrors(errors);
+                }
+            };
+
+            const handleDelete = (index) => {
+                if (window.confirm('Are you sure you want to delete this run?')) {
+                    const newRuns = runs.filter((_, i) => i !== index);
+                    setRuns(newRuns);
+                    showNotification('Run deleted successfully!');
+                }
+            };
+
+            const handleEdit = (index) => {
+                setEditingRun({ ...runs[index], index });
+            };
+
+            const handleSaveEdit = (editedRun) => {
+                const newRuns = [...runs];
+                newRuns[editedRun.index] = {
+                    date: editedRun.date,
+                    distance: editedRun.distance,
+                    timeMinutes: editedRun.timeMinutes
+                };
+                setRuns(newRuns);
+                showNotification('Run updated successfully!');
+            };
+
+            const handleFileUpload = (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const newRuns = parseCSV(e.target.result);
+                            if (window.confirm(`Import ${newRuns.length} runs? This will replace your current data.`)) {
+                                setRuns(newRuns);
+                                showNotification('Data imported successfully!');
+                            }
+                        } catch (error) {
+                            console.error('Error parsing CSV:', error);
+                            showNotification('Error importing CSV file!', true);
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+
+            return (
+                <div className="max-w-6xl mx-auto p-4 space-y-6">
+                    {/* Data Management */}
+                    <div className="bg-white rounded-lg shadow p-6">
+                        <h2 className="text-xl font-bold mb-4">Data Management</h2>
+    <div className="flex space-x-4 items-center">
+        <button
+            onClick={() => exportToCSV(runs)}
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+        >
+            Export to CSV
+        </button>
+        <div>
+            <input
+                type="file"
+                accept=".csv"
+                onChange={handleFileUpload}
+                className="hidden"
+                id="csv-upload"
+            />
+            <label
+                htmlFor="csv-upload"
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer"
+            >
+                Import from CSV
+            </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Add New Run Form */}
+                    <div className="bg-white rounded-lg shadow p-6">
+                        <h2 className="text-xl font-bold mb-4">Add New Training Run</h2>
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Date</label>
+                                    <input
+                                        type="date"
+                                        value={newRun.date}
+                                        onChange={e => setNewRun({ ...newRun, date: e.target.value })}
+                                        className="w-full p-2 border rounded"
+                                    />
+                                    {validationErrors.date && (
+                                        <p className="text-red-500 text-sm">{validationErrors.date}</p>
+                                    )}
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Distance (km)</label>
+                                    <input
+                                        type="number"
+                                        step="0.1"
+                                        value={newRun.distance}
+                                        onChange={e => setNewRun({ ...newRun, distance: parseFloat(e.target.value) })}
+                                        className="w-full p-2 border rounded"
+                                    />
+                                    {validationErrors.distance && (
+                                        <p className="text-red-500 text-sm">{validationErrors.distance}</p>
+                                    )}
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Time (minutes)</label>
+                                    <input
+                                        type="number"
+                                        value={newRun.timeMinutes}
+                                        onChange={e => setNewRun({ ...newRun, timeMinutes: parseInt(e.target.value) })}
+                                        className="w-full p-2 border rounded"
+                                    />
+                                    {validationErrors.timeMinutes && (
+                                        <p className="text-red-500 text-sm">{validationErrors.timeMinutes}</p>
+                                    )}
+                                </div>
+                            </div>
+                            <button
+                                type="submit"
+                                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                            >
+                                Add Run
+                            </button>
+                        </form>
+                    </div>
+
+                    {/* Training History Table */}
+                    <div className="bg-white rounded-lg shadow p-6">
+                        <h2 className="text-xl font-bold mb-4">Training History</h2>
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead>
+                                    <tr className="border-b">
+                                        <th className="text-left p-2">Date</th>
+                                        <th className="text-left p-2">Distance (km)</th>
+                                        <th className="text-left p-2">Time</th>
+                                        <th className="text-left p-2">Pace (min/km)</th>
+                                        <th className="text-left p-2">Pace (min/mile)</th>
+                                        <th className="text-left p-2">Speed (km/h)</th>
+                                        <th className="text-left p-2">Speed (mph)</th>
+                                        <th className="text-left p-2">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {runs.map((run, index) => {
+                                        const stats = calculatePace(run.distance, run.timeMinutes);
+                                        return (
+                                            <tr key={index} className="border-b hover:bg-gray-50">
+                                                <td className="p-2">{new Date(run.date).toLocaleDateString()}</td>
+                                                <td className="p-2">{run.distance}</td>
+                                                <td className="p-2">{run.timeMinutes} min</td>
+                                                <td className="p-2">{stats.minPerKm} min/km</td>
+                                                <td className="p-2">{stats.minPerMile} min/mile</td>
+                                                <td className="p-2">{stats.kmh} km/h</td>
+                                                <td className="p-2">{stats.mph} mph</td>
+                                                <td className="p-2">
+                                                    <div className="flex space-x-2">
+                                                        <button
+                                                            onClick={() => handleEdit(index)}
+                                                            className="text-blue-500 hover:text-blue-700"
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDelete(index)}
+                                                            className="text-red-500 hover:text-red-700"
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {/* Edit Modal */}
+                    {editingRun && (
+                        <EditModal
+                            run={editingRun}
+                            isOpen={true}
+                            onClose={() => setEditingRun(null)}
+                            onSave={handleSaveEdit}
+                        />
+                    )}
+
+                    {/* Toast Notification */}
+                    <Toast
+                        message={toastMessage}
+                        isVisible={showToast}
+                        isError={isError}
+                        onClose={() => setShowToast(false)}
+                    />
+                </div>
+            );
+        }
+
+        // Calculate pace function (needed for the table)
+        const calculatePace = (distance, timeMinutes) => {
+            const pacePerKm = timeMinutes / distance;
+            const paceMinutes = Math.floor(pacePerKm);
+            const paceSeconds = Math.round((pacePerKm - paceMinutes) * 60);
+
+            const miles = distance * 0.621371;
+            const pacePerMile = timeMinutes / miles;
+            const paceMileMinutes = Math.floor(pacePerMile);
+            const paceMileSeconds = Math.round((pacePerMile - paceMileMinutes) * 60);
+
+            const kmPerHour = (distance / timeMinutes) * 60;
+            const milesPerHour = (miles / timeMinutes) * 60;
+
+            return {
+                minPerKm: `${paceMinutes}:${paceSeconds.toString().padStart(2, '0')}`,
+                minPerMile: `${paceMileMinutes}:${paceMileSeconds.toString().padStart(2, '0')}`,
+                kmh: kmPerHour.toFixed(2),
+                mph: milesPerHour.toFixed(2)
+            };
+        };
+
+        // Render the app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<TrainingDashboard />);
+    </script>
+</body>
+
+</html>
