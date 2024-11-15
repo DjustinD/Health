@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,50 +34,66 @@
             list-style: none;
             padding: 0;
             display: flex;
+            flex-wrap: wrap;
             gap: 20px;
         }
 
+        .navigation li {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
         .navigation a {
-            color: #2c3e50;
+            color: #3498db;
             text-decoration: none;
             font-weight: bold;
             padding: 8px 16px;
             border-radius: 4px;
             transition: background-color 0.3s;
+            white-space: nowrap;
         }
 
         .navigation a:hover {
             background-color: #e9ecef;
         }
 
-        .benefit-section {
-            margin-bottom: 40px;
-            padding: 20px;
-            border-radius: 8px;
-            background: #ffffff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        @media (max-width: 600px) {
+            .navigation li {
+                display: block;
+                margin-bottom: 10px;
+            }
         }
 
-        .quote {
-            font-style: italic;
-            color: #666;
-            border-left: 4px solid #3498db;
-            padding-left: 20px;
-            margin: 20px 0;
-        }
+    .benefit-section {
+    margin-bottom: 40px;
+    padding: 20px;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
 
-        .highlight {
-            background-color: #e3f2fd;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-        }
+    .quote {
+    font-style: italic;
+    color: #666;
+    border-left: 4px solid #3498db;
+    padding-left: 20px;
+    margin: 20px 0;
+    }
+
+    .highlight {
+    background-color: #e3f2fd;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+    }
     </style>
 </head>
+
 <body>
     <div class="header">
         <h1>Marathon Running: A Journey to Total Health</h1>
-        <p>Discover how marathon training transforms not just your body, but your entire approach to health and life.</p>
+        <p>Discover how marathon training transforms not just your body, but your entire approach to health and life.
+        </p>
     </div>
 
     <nav class="navigation">
@@ -91,14 +108,16 @@
 
     <div class="benefit-section">
         <h2>Mental Resilience: The Marathon Mindset</h2>
-        <p>Marathon training builds extraordinary mental toughness. Each long run is a lesson in perseverance, teaching you to push through challenges not just in running, but in all aspects of life.</p>
-        
+        <p>Marathon training builds extraordinary mental toughness. Each long run is a lesson in perseverance, teaching
+            you to push through challenges not just in running, but in all aspects of life.</p>
+
         <div class="quote">
-            "It's not the marathon, but the journey, that builds resilience. Every step, every struggle, transforms you."
+            "It's not the marathon, but the journey, that builds resilience. Every step, every struggle, transforms
+            you."
             <br>
             — Kathrine Switzer, First Woman to Officially Run the Boston Marathon
         </div>
-        
+
         <p>Training for a marathon develops:</p>
         <ul>
             <li>Goal-setting and long-term planning skills</li>
@@ -119,12 +138,13 @@
             <li>Enhanced endurance and stamina</li>
             <li>Improved circulation throughout the body</li>
         </ul>
-        
+
         <div class="highlight">
-            Regular marathon training can reduce the risk of cardiovascular disease by up to 45% and add years to your life expectancy.
+            Regular marathon training can reduce the risk of cardiovascular disease by up to 45% and add years to your
+            life expectancy.
         </div>
         <div class="quote">
-            "Running is not just about speed; it's about building a healthier, longer life one mile at a time." 
+            "Running is not just about speed; it's about building a healthier, longer life one mile at a time."
             <br>– Unknown
         </div>
     </div>
@@ -139,72 +159,79 @@
             <li>Strategic meal timing and planning</li>
             <li>Natural gravitation toward whole, nutritious foods</li>
         </ul>
-        
+
         <div class="highlight">
-            Marathon runners learn to view food not just as calories, but as essential fuel for performance and recovery.
+            Marathon runners learn to view food not just as calories, but as essential fuel for performance and
+            recovery.
         </div>
         <div class="quote">
             "What you eat in private, you wear in public. Nutrition is the foundation of performance."
             <br>
             — Bob Harper, Fitness Trainer and Author
-    </div>
-
-    <div class="benefit-section">
-        <h2>Sleep and Recovery: The Hidden Training Partner</h2>
-        <p>Marathon training teaches the vital importance of quality rest:</p>
-        <ul>
-            <li>Naturally regulated sleep patterns</li>
-            <li>Improved sleep quality due to physical exertion</li>
-            <li>Better understanding of recovery's role in performance</li>
-            <li>Enhanced body awareness and recognition of rest needs</li>
-            <li>Development of healthy sleep routines</li>
-        </ul>
-        
-        <div class="quote">
-            "The marathon is not just about the race; it's about the journey. You get out of it what you put in, including rest and recovery."
-            <br>
-            — Meb Keflezighi, Olympic Medalist and New York City Marathon Champion
         </div>
-    </div>
 
-    <div class="benefit-section">
-        <h2>Community and Social Health</h2>
-        <p>Marathon training often leads to:</p>
-        <ul>
-            <li>Connection with like-minded individuals</li>
-            <li>Support systems through running groups</li>
-            <li>Shared experiences and challenges</li>
-            <li>Opportunities for mentorship</li>
-            <li>Regular social interaction through training</li>
-        </ul>
-    </div>
-    <div class="quote">
-        "Running is not, as it so often seems, only about what you did in your last race or about how many miles you ran last week. It is, in a much more important way, about community, about appreciating all the miles run by other runners, too."
-        <br>
-        — Richard O'Brien
-        <br>
-        <a href="https://www.verywellfit.com/quotes-about-marathon-running-2911758" target="_blank" rel="noopener">Reference</a>
-    </div>
-    <div class="benefit-section">
-        <h2>Long-Term Health Benefits</h2>
-        <p>The marathon journey creates lasting positive changes:</p>
-        <ul>
-            <li>Improved bone density and joint health</li>
-            <li>Enhanced immune system function</li>
-            <li>Better weight management</li>
-            <li>Reduced risk of age-related diseases</li>
-            <li>Improved cognitive function and memory</li>
-            <li>Greater life satisfaction and self-esteem</li>
-        </ul>
-        
-        <div class="highlight">
-            Marathon training is not just about completing 26.2 miles - it's about embracing a lifestyle that promotes longevity, health, and personal growth.
+        <div class="benefit-section">
+            <h2>Sleep and Recovery: The Hidden Training Partner</h2>
+            <p>Marathon training teaches the vital importance of quality rest:</p>
+            <ul>
+                <li>Naturally regulated sleep patterns</li>
+                <li>Improved sleep quality due to physical exertion</li>
+                <li>Better understanding of recovery's role in performance</li>
+                <li>Enhanced body awareness and recognition of rest needs</li>
+                <li>Development of healthy sleep routines</li>
+            </ul>
+
+            <div class="quote">
+                "The marathon is not just about the race; it's about the journey. You get out of it what you put in,
+                including rest and recovery."
+                <br>
+                — Meb Keflezighi, Olympic Medalist and New York City Marathon Champion
+            </div>
+        </div>
+
+        <div class="benefit-section">
+            <h2>Community and Social Health</h2>
+            <p>Marathon training often leads to:</p>
+            <ul>
+                <li>Connection with like-minded individuals</li>
+                <li>Support systems through running groups</li>
+                <li>Shared experiences and challenges</li>
+                <li>Opportunities for mentorship</li>
+                <li>Regular social interaction through training</li>
+            </ul>
         </div>
         <div class="quote">
-            "Fitness is not about being better than someone else. It's about being better than you used to be."
+            "Running is not, as it so often seems, only about what you did in your last race or about how many miles you
+            ran last week. It is, in a much more important way, about community, about appreciating all the miles run by
+            other runners, too."
             <br>
-            - Dr. Kenneth Cooper, a pioneer in the field of aerobics and cardiovascular health
+            — Richard O'Brien
+            <br>
+            <a href="https://www.verywellfit.com/quotes-about-marathon-running-2911758" target="_blank"
+                rel="noopener">Reference</a>
         </div>
-    </div>
+        <div class="benefit-section">
+            <h2>Long-Term Health Benefits</h2>
+            <p>The marathon journey creates lasting positive changes:</p>
+            <ul>
+                <li>Improved bone density and joint health</li>
+                <li>Enhanced immune system function</li>
+                <li>Better weight management</li>
+                <li>Reduced risk of age-related diseases</li>
+                <li>Improved cognitive function and memory</li>
+                <li>Greater life satisfaction and self-esteem</li>
+            </ul>
+
+            <div class="highlight">
+                Marathon training is not just about completing 26.2 miles - it's about embracing a lifestyle that
+                promotes longevity, health, and personal growth.
+            </div>
+            <div class="quote">
+                "Fitness is not about being better than someone else. It's about being better than you used to be."
+                <br>
+                - Dr. Kenneth Cooper, a pioneer in the field of aerobics and cardiovascular health
+            </div>
+        </div>
 </body>
+
 </html>
