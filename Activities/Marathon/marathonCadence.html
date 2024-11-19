@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marathon Cadence</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f9fafb;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 120px;
+        }
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 4px;
+        }
+        .start-btn {
+            background: #22c55e;
+            color: white;
+        }
+        .start-btn:hover {
+            background: #16a34a;
+        }
+        .stop-btn {
+            background: #ef4444;
+            color: white;
+        }
+        .stop-btn:hover {
+            background: #dc2626;
+        }
+        .delete-btn {
+            background: none;
+            color: #666;
+            padding: 4px 8px;
+        }
+        .delete-btn:hover {
+            background: #f3f4f6;
+        }
+        .add-btn {
+            background: #f3f4f6;
+            color: #666;
+        }
+        .add-btn:hover {
+            background: #e5e7eb;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        .status {
+            margin-left: 16px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="title">Marathon Cadence</div>
+        <div class="controls">
+            <button id="playButton" class="start-btn">Start</button>
+            <span id="currentTime" class="status">Current Time: 00:00:00</span>
+            <span id="currentCadence" class="status"></span>
+        </div>
+        <table id="paceTable">
+            <thead>
+                <tr>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Start Cadence (BPM)</th>
+                    <th>End Cadence (BPM)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <button class="add-btn" onclick="addRow()">+ Add Row</button>
+    </div>
+
+    <script>
+        let audioContext = null;
+        let nextTickTime = 0;
+        let timerHandle = null;
+        let isPlaying = false;
+        let currentTime = 0;
+        let rows = [
+            { id: 1, startTime: "00:00:00", endTime: "00:10:00", startCadence: 140, endCadence: 140 },
+            { id: 2, startTime: "00:10:00", endTime: "00:14:00", startCadence: 140, endCadence: 170 },
+            { id: 3, startTime: "00:14:00", endTime: "05:00:00", startCadence: 170, endCadence: 170 }
+        ];
+
+        function timeToSeconds(timeStr) {
+            const [hours, minutes, seconds] = timeStr.split(':').map(Number);
+            return hours * 3600 + minutes * 60 + seconds;
+        }
+
+        function secondsToTimeStr(totalSeconds) {
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function createHeartbeatSound() {
+            const ctx = audioContext;
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.value = 150;
+            
+            gainNode.gain.setValueAtTime(0, ctx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(1, ctx.currentTime + 0.01);
+            gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.1);
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            
+            oscillator.start(ctx.currentTime);
+            oscillator.stop(ctx.currentTime + 0.1);
+        }
+
+        function getCurrentCadence(timeInSeconds) {
+            const currentRow = rows.find(row => {
+                const startSeconds = timeToSeconds(row.startTime);
+                const endSeconds = timeToSeconds(row.endTime);
+                return timeInSeconds >= startSeconds && timeInSeconds <= endSeconds;
+            });
+
+            if (!currentRow) return null;
+
+            const startSeconds = timeToSeconds(currentRow.startTime);
+            const endSeconds = timeToSeconds(currentRow.endTime);
+            const progress = (timeInSeconds - startSeconds) / (endSeconds - startSeconds);
+            
+            return Math.round(
+                currentRow.startCadence + 
+                (currentRow.endCadence - currentRow.startCadence) * progress
+            );
+        }
+
+        function scheduleBeats() {
+            const currentCadence = getCurrentCadence(currentTime);
+            
+            if (!currentCadence) {
+                togglePlay();
+                return;
+            }
+
+            document.getElementById('currentCadence').textContent = `Current Cadence: ${currentCadence} BPM`;
+            const secondsPerBeat = 60 / currentCadence;
+
+            if (nextTickTime < audioContext.currentTime) {
+                nextTickTime = audioContext.currentTime;
+            }
+
+            createHeartbeatSound();
+            nextTickTime += secondsPerBeat;
+
+            const timeout = (nextTickTime - audioContext.currentTime) * 1000;
+            timerHandle = setTimeout(scheduleBeats, timeout);
+        }
+
+        function togglePlay() {
+            const playButton = document.getElementById('playButton');
+            if (isPlaying) {
+                isPlaying = false;
+                playButton.textContent = 'Start';
+                playButton.className = 'start-btn';
+                if (timerHandle) {
+                    clearTimeout(timerHandle);
+                }
+                clearInterval(window.timeInterval);
+                document.getElementById('currentCadence').textContent = '';
+            } else {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                isPlaying = true;
+                playButton.textContent = 'Stop';
+                playButton.className = 'stop-btn';
+                scheduleBeats();
+                window.timeInterval = setInterval(() => {
+                    currentTime++;
+                    document.getElementById('currentTime').textContent = 
+                        `Current Time: ${secondsToTimeStr(currentTime)}`;
+                }, 1000);
+            }
+        }
+
+        function deleteRow(id) {
+            if (rows.length <= 1) return;
+            rows = rows.filter(row => row.id !== id);
+            renderTable();
+        }
+
+        function updateRow(id, field, value) {
+            rows = rows.map(row => {
+                if (row.id === id) {
+                    return { ...row, [field]: value };
+                }
+                return row;
+            });
+        }
+
+        function addRow() {
+            const lastRow = rows[rows.length - 1];
+            const newRow = {
+                id: Math.max(...rows.map(r => r.id)) + 1,
+                startTime: lastRow.endTime,
+                endTime: secondsToTimeStr(timeToSeconds(lastRow.endTime) + 300),
+                startCadence: lastRow.endCadence,
+                endCadence: lastRow.endCadence
+            };
+            rows.push(newRow);
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.querySelector('#paceTable tbody');
+            tbody.innerHTML = rows.map(row => `
+                <tr>
+                    <td><input type="text" value="${row.startTime}" 
+                        onchange="updateRow(${row.id}, 'startTime', this.value)"></td>
+                    <td><input type="text" value="${row.endTime}" 
+                        onchange="updateRow(${row.id}, 'endTime', this.value)"></td>
+                    <td><input type="number" value="${row.startCadence}" 
+                        onchange="updateRow(${row.id}, 'startCadence', parseInt(this.value))"></td>
+                    <td><input type="number" value="${row.endCadence}" 
+                        onchange="updateRow(${row.id}, 'endCadence', parseInt(this.value))"></td>
+                    <td>
+                        <button class="delete-btn" onclick="deleteRow(${row.id})" 
+                                ${rows.length === 1 ? 'disabled' : ''}>
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        document.getElementById('playButton').onclick = togglePlay;
+        renderTable();
+    </script>
+</body>
+</html>
