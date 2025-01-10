@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pace Conversions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+            text-align: left;
+            width: 40%;
+        }
+        td {
+            text-align: right;
+            width: 60%;
+        }
+        input {
+            width: 100px;
+            padding: 8px;
+            text-align: right;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        input:focus {
+            outline: 2px solid #4CAF50;
+            border-color: transparent;
+        }
+        @media (max-width: 480px) {
+            body {
+                margin: 10px;
+            }
+            table {
+                width: 100%;
+            }
+            input {
+                width: 90px;
+            }
+            th, td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Pace Conversions</h1>
+    <table>
+        <tbody>
+            <tr>
+                <th>Speed (km/hr)</th>
+                <td><input type="text" step="0.01" id="kmh" value="14.06" title="Speed in km/h" placeholder="Enter speed in km/h"></td>
+            </tr>
+            <tr>
+                <th>Speed (mph)</th>
+                <td><input type="text" step="0.01" id="mph" value="8.74" title="Speed in mph" placeholder="Enter speed in mph"></td>
+            </tr>
+            <tr>
+                <th>Pace (mins/km)</th>
+                <td><input type="text" id="minsPerKm" value="4:16" title="Pace in mins/km" placeholder="Enter pace in mins/km"></td>
+            </tr>
+            <tr>
+                <th>Pace (mins/mile)</th>
+                <td><input type="text" id="minsPerMile" value="6:52" title="Pace in mins/mile" placeholder="Enter pace in mins/mile"></td>
+            </tr>
+            <tr>
+                <th>5K Time</th>
+                <td><input type="text" id="time5k" value="21:20" title="5K Time" placeholder="Enter 5K time"></td>
+            </tr>
+            <tr>
+                <th>10K Time</th>
+                <td><input type="text" id="time10k" value="42:40" title="10K Time" placeholder="Enter 10K time"></td>
+            </tr>
+            <tr>
+                <th>Half Marathon</th>
+                <td><input type="text" id="timeHalf" value="1:30:00" title="Half Marathon Time" placeholder="Enter half marathon time"></td>
+            </tr>
+            <tr>
+                <th>Marathon</th>
+                <td><input type="text" id="timeMarathon" value="3:00:00" title="Marathon Time" placeholder="Enter marathon time"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        // Utility functions
+        function timeToMinutes(timeStr) {
+            const parts = timeStr.split(':').map(Number);
+            if (parts.length === 3) {
+                return parts[0] * 60 + parts[1] + parts[2] / 60;
+            }
+            return parts[0] + parts[1] / 60;
+        }
+
+        function formatTime(minutes) {
+            const hrs = Math.floor(minutes / 60);
+            const mins = Math.floor(minutes % 60);
+            const secs = Math.round((minutes * 60) % 60);
+            
+            if (hrs > 0) {
+                return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Main calculation functions
+        function calculateFromKmh(kmh) {
+            const mph = kmh * 0.621371;
+            const minsPerKm = 60 / kmh;
+            const minsPerMile = 60 / mph;
+            const time5k = 5 * minsPerKm;
+            const time10k = 10 * minsPerKm;
+            const timeHalf = 21.0975 * minsPerKm;
+            const timeMarathon = 42.195 * minsPerKm;
+
+            updateInputs(kmh, mph, minsPerKm, minsPerMile, time5k, time10k, timeHalf, timeMarathon);
+        }
+
+        function calculateFromMph(mph) {
+            const kmh = mph / 0.621371;
+            calculateFromKmh(kmh);
+        }
+
+        function calculateFromMinsPerKm(minsPerKm) {
+            const kmh = 60 / minsPerKm;
+            calculateFromKmh(kmh);
+        }
+
+        function calculateFromMinsPerMile(minsPerMile) {
+            const mph = 60 / minsPerMile;
+            calculateFromMph(mph);
+        }
+
+        function calculateFrom5k(time5k) {
+            const minsPerKm = time5k / 5;
+            calculateFromMinsPerKm(minsPerKm);
+        }
+
+        function calculateFrom10k(time10k) {
+            const minsPerKm = time10k / 10;
+            calculateFromMinsPerKm(minsPerKm);
+        }
+
+        function calculateFromHalf(timeHalf) {
+            const minsPerKm = timeHalf / 21.0975;
+            calculateFromMinsPerKm(minsPerKm);
+        }
+
+        function calculateFromMarathon(timeMarathon) {
+            const minsPerKm = timeMarathon / 42.195;
+            calculateFromMinsPerKm(minsPerKm);
+        }
+
+        // Update all input fields
+        function updateInputs(kmh, mph, minsPerKm, minsPerMile, time5k, time10k, timeHalf, timeMarathon) {
+            document.getElementById('kmh').value = kmh.toFixed(2);
+            document.getElementById('mph').value = mph.toFixed(2);
+            document.getElementById('minsPerKm').value = formatTime(minsPerKm);
+            document.getElementById('minsPerMile').value = formatTime(minsPerMile);
+            document.getElementById('time5k').value = formatTime(time5k);
+            document.getElementById('time10k').value = formatTime(time10k);
+            document.getElementById('timeHalf').value = formatTime(timeHalf);
+            document.getElementById('timeMarathon').value = formatTime(timeMarathon);
+        }
+
+        // Event listeners
+        document.getElementById('kmh').addEventListener('input', (e) => {
+            if (e.target.value) calculateFromKmh(parseFloat(e.target.value));
+        });
+
+        document.getElementById('mph').addEventListener('input', (e) => {
+            if (e.target.value) calculateFromMph(parseFloat(e.target.value));
+        });
+
+        document.getElementById('minsPerKm').addEventListener('change', (e) => {
+            if (e.target.value) calculateFromMinsPerKm(timeToMinutes(e.target.value));
+        });
+
+        document.getElementById('minsPerMile').addEventListener('change', (e) => {
+            if (e.target.value) calculateFromMinsPerMile(timeToMinutes(e.target.value));
+        });
+
+        document.getElementById('time5k').addEventListener('change', (e) => {
+            if (e.target.value) calculateFrom5k(timeToMinutes(e.target.value));
+        });
+
+        document.getElementById('time10k').addEventListener('change', (e) => {
+            if (e.target.value) calculateFrom10k(timeToMinutes(e.target.value));
+        });
+
+        document.getElementById('timeHalf').addEventListener('change', (e) => {
+            if (e.target.value) calculateFromHalf(timeToMinutes(e.target.value));
+        });
+
+        document.getElementById('timeMarathon').addEventListener('change', (e) => {
+            if (e.target.value) calculateFromMarathon(timeToMinutes(e.target.value));
+        });
+    </script>
+</body>
+</html>
