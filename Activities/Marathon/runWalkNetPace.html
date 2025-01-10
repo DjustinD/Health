@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Run/Walk Pace Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .input-group input {
+            width: 80px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .input-group select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .results {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f8f8f8;
+            border-radius: 4px;
+        }
+        .results h2 {
+            margin-top: 0;
+            color: #4CAF50;
+            margin-bottom: 15px;
+        }
+        .results .pace-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .results .pace-value {
+            padding: 5px;
+        }
+        .results .race-times {
+            margin-top: 20px;
+        }
+        .hint {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 2px;
+        }
+        input:focus, select:focus {
+            outline: 2px solid #4CAF50;
+            border-color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Run/Walk Pace Calculator</h1>
+        <div class="hint">Time values can be entered as decimal (5.5) or time format (5:30)</div>
+        <div class="input-group">
+            <span>For each</span>
+            <input type="text" id="runMinutes" value="4" placeholder="5:30">
+            <span>minutes running,</span>
+        </div>
+        
+        
+        <div class="input-group">
+            <span>I do</span>
+            <input type="text" id="walkMinutes" value="1" placeholder="1:30">
+            <span>minutes walking.</span>
+        </div>
+        
+        <div class="input-group">
+            <span>My running pace is</span>
+            <input type="text" id="runPace" value="10" placeholder="5:30">
+            <select id="runPaceUnit" title="Select running pace unit">
+                <option value="kmh">km/h</option>
+                <option value="mph">mph</option>
+                <option value="minkm">mins/km</option>
+                <option value="minmi">mins/mile</option>
+            </select>
+        </div>
+        
+        <div class="input-group">
+            <span>My walking pace is</span>
+            <input type="text" id="walkPace" value="5" placeholder="5:30">
+            <select id="walkPaceUnit" title="Select walking pace unit">
+                <option value="kmh">km/h</option>
+                <option value="mph">mph</option>
+                <option value="minkm">mins/km</option>
+                <option value="minmi">mins/mile</option>
+            </select>
+        </div>
+        
+        <div class="results">
+            <h2>Results</h2>
+            <div>Average Pace:</div>
+            <div class="pace-grid">
+                <div class="pace-value">
+                    <strong>km/h:</strong> <span id="avgPaceKmh">-</span>
+                </div>
+                <div class="pace-value">
+                    <strong>mph:</strong> <span id="avgPaceMph">-</span>
+                </div>
+                <div class="pace-value">
+                    <strong>mins/km:</strong> <span id="avgPaceMinsKm">-</span>
+                </div>
+                <div class="pace-value">
+                    <strong>mins/mile:</strong> <span id="avgPaceMinsMi">-</span>
+                </div>
+            </div>
+            <div class="race-times">
+                <div>5K Time: <span id="time5k">calculating...</span></div>
+                <div>10K Time: <span id="time10k">calculating...</span></div>
+                <div>Half Marathon Time: <span id="timeHalf">calculating...</span></div>
+                <div>Marathon Time: <span id="timeMarathon">calculating...</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Parse input that could be either decimal or MM:SS format
+        function parseTimeInput(input) {
+            input = input.trim();
+            
+            // Check if input is in MM:SS format
+            if (input.includes(':')) {
+                const [mins, secs] = input.split(':').map(Number);
+                return mins + (secs / 60);
+            }
+            
+            // Otherwise treat as decimal
+            return parseFloat(input);
+        }
+
+        // Conversion functions
+        function convertToKmh(pace, unit) {
+            const paceValue = parseTimeInput(pace.toString());
+            switch(unit) {
+                case 'kmh': return paceValue;
+                case 'mph': return paceValue * 1.60934;
+                case 'minkm': return 60 / paceValue;
+                case 'minmi': return 60 / (paceValue / 1.60934);
+            }
+        }
+
+        function formatTime(minutes) {
+            const hrs = Math.floor(minutes / 60);
+            const mins = Math.floor(minutes % 60);
+            const secs = Math.round((minutes * 60) % 60);
+            
+            if (hrs > 0) {
+                return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function calculatePaces() {
+            try {
+                // Get input values with flexible format parsing
+                const runMins = parseTimeInput(document.getElementById('runMinutes').value);
+                const walkMins = parseTimeInput(document.getElementById('walkMinutes').value);
+                const runPace = document.getElementById('runPace').value;
+                const walkPace = document.getElementById('walkPace').value;
+                const runUnit = document.getElementById('runPaceUnit').value;
+                const walkUnit = document.getElementById('walkPaceUnit').value;
+
+                // Convert both paces to km/h
+                const runSpeedKmh = convertToKmh(runPace, runUnit);
+                const walkSpeedKmh = convertToKmh(walkPace, walkUnit);
+
+                // Calculate cycle time and distance
+                const cycleTime = runMins + walkMins; // minutes
+                const cycleDistanceKm = (runSpeedKmh * runMins/60) + (walkSpeedKmh * walkMins/60);
+                
+                // Calculate average speed in km/h
+                const avgSpeedKmh = cycleDistanceKm / (cycleTime/60);
+                
+                // Calculate all pace representations
+                const avgSpeedMph = avgSpeedKmh / 1.60934;
+                const avgPaceMinsPerKm = 60 / avgSpeedKmh;
+                const avgPaceMinsPerMile = avgPaceMinsPerKm * 1.60934;
+
+                // Update all pace displays
+                document.getElementById('avgPaceKmh').textContent = avgSpeedKmh.toFixed(2);
+                document.getElementById('avgPaceMph').textContent = avgSpeedMph.toFixed(2);
+                document.getElementById('avgPaceMinsKm').textContent = formatTime(avgPaceMinsPerKm);
+                document.getElementById('avgPaceMinsMi').textContent = formatTime(avgPaceMinsPerMile);
+                
+                // Calculate race times
+                const time5k = 5 * avgPaceMinsPerKm;
+                const time10k = 10 * avgPaceMinsPerKm;
+                const timeHalf = 21.0975 * avgPaceMinsPerKm;
+                const timeMarathon = 42.195 * avgPaceMinsPerKm;
+
+                // Update race times
+                document.getElementById('time5k').textContent = formatTime(time5k);
+                document.getElementById('time10k').textContent = formatTime(time10k);
+                document.getElementById('timeHalf').textContent = formatTime(timeHalf);
+                document.getElementById('timeMarathon').textContent = formatTime(timeMarathon);
+            } catch (error) {
+                console.error('Calculation error:', error);
+            }
+        }
+
+        // Format input value on blur for time-based inputs
+        function formatInputOnBlur(event) {
+            const element = event.target;
+            const unit = element.nextElementSibling?.value;
+            
+            // Only format if it's a time-based input
+            if (!element.value.includes(':') && 
+                (element.id === 'runMinutes' || 
+                 element.id === 'walkMinutes' || 
+                 (unit === 'minkm' || unit === 'minmi'))) {
+                try {
+                    const value = parseFloat(element.value);
+                    if (!isNaN(value)) {
+                        const mins = Math.floor(value);
+                        const secs = Math.round((value - mins) * 60);
+                        element.value = `${mins}:${secs.toString().padStart(2, '0')}`;
+                    }
+                } catch (error) {
+                    console.error('Format error:', error);
+                }
+            }
+        }
+
+        // Add event listeners to all inputs and selects
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('input', calculatePaces);
+            input.addEventListener('blur', formatInputOnBlur);
+        });
+
+        // Initial calculation
+        calculatePaces();
+    </script>
+</body>
+</html>
