@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Assessment: Radicals and Exponents</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .section {
+            background-color: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-container {
+            margin: 15px 0;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .skip-btn {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        .next-btn {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .progress {
+            background-color: #ddd;
+            height: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background-color: #4CAF50;
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .correct {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+
+        .incorrect {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+
+        .section-title {
+            color: #2196F3;
+            margin-bottom: 15px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .filter-controls input {
+            width: 60px;
+            padding: 5px;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .report-table th,
+        .report-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .report-table th {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Math Assessment: Radicals and Exponents</h1>
+
+    <div class="stats">
+        <div class="stat-box">
+            <h3>Progress</h3>
+            <p id="progress-stat">0%</p>
+        </div>
+        <div class="stat-box">
+            <h3>Correct</h3>
+            <p id="correct-stat">0</p>
+        </div>
+        <div class="stat-box">
+            <h3>Skipped</h3>
+            <p id="skipped-stat">0</p>
+        </div>
+    </div>
+
+    <div class="progress">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <div id="test-container"></div>
+
+    <script>
+        // Test data in JSON format
+        const testData = {
+            "addPolynomials": {
+                "title": "Add Polynomials",
+                "questions": [
+                    {
+                        "id": "ap1",
+                        "question": "Add the polynomials \\((3x+4) + 4x\\)",
+                        "answer": "7x+4",
+                        "difficulty": 1,
+                        "explanation": "Combine like terms: \\(3x + 4x = 7x\\), constant term remains \\(4\\)"
+                    },
+                    {
+                        "id": "ap2",
+                        "question": "Add the polynomials \\((7y^2 + 4y + 2) + (2y^2 – 2y + 3)\\)",
+                        "answer": "9y^2+2y+5",
+                        "difficulty": 2,
+                        "explanation": "Combine like terms: \\(7y^2 + 2y^2 = 9y^2\\), \\(4y - 2y = 2y\\), \\(2 + 3 = 5\\)"
+                    },
+                    {
+                        "id": "ap3",
+                        "question": "Add the polynomials \\((3x^2 – 2x) + (x^2 + x)\\)",
+                        "answer": "4x^2-x",
+                        "difficulty": 2,
+                        "explanation": "Combine like terms: \\(3x^2 + x^2 = 4x^2\\), \\(-2x + x = -x\\)"
+                    },
+                    {
+                        "id": "ap4",
+                        "question": "Add the polynomials \\((4n^2 – 2n – 4) + (-n^2 + 5n)\\)",
+                        "answer": "3n^2+3n-4",
+                        "difficulty": 2,
+                        "explanation": "Combine like terms: \\(4n^2 - n^2 = 3n^2\\), \\(-2n + 5n = 3n\\), constant term \\(-4\\)"
+                    },
+                    {
+                        "id": "ap5",
+                        "question": "Add the polynomials \\((7r – 8) + (3r^2 – 11)\\)",
+                        "answer": "3r^2+7r-19",
+                        "difficulty": 2,
+                        "explanation": "Combine like terms: \\(3r^2\\) term remains, \\(7r\\) term remains, \\(-8 + (-11) = -19\\)"
+                    },
+                    {
+                        "id": "ap6",
+                        "question": "Add the polynomials \\((2b^2 – 8b) + (-2b^2 + 11b)\\)",
+                        "answer": "3b",
+                        "difficulty": 2,
+                        "explanation": "Combine like terms: \\(2b^2 - 2b^2 = 0\\), \\(-8b + 11b = 3b\\)"
+                    },
+                    {
+                        "id": "ap7",
+                        "question": "Add the polynomials \\((7t^2 – 6t + 9) + (-2t^2 + 6t – 5)\\)",
+                        "answer": "5t^2+4",
+                        "difficulty": 3,
+                        "explanation": "Combine like terms: \\(7t^2 - 2t^2 = 5t^2\\), \\(-6t + 6t = 0\\), \\(9 - 5 = 4\\)"
+                    },
+                    {
+                        "id": "ap8",
+                        "question": "Add the polynomials \\((4q^2 + 5q^3) + (2q^3 + 3q^4 – 8q^2)\\)",
+                        "answer": "3q^4+7q^3-4q^2",
+                        "difficulty": 3,
+                        "explanation": "Combine like terms: \\(3q^4\\) remains, \\(5q^3 + 2q^3 = 7q^3\\), \\(4q^2 - 8q^2 = -4q^2\\)"
+                    },
+                    {
+                        "id": "ap9",
+                        "question": "Add the polynomials \\((3h + 6h^4) + (7h – 8h^4 – 5)\\)",
+                        "answer": "-2h^4+10h-5",
+                        "difficulty": 3,
+                        "explanation": "Combine like terms: \\(6h^4 - 8h^4 = -2h^4\\), \\(3h + 7h = 10h\\), constant term \\(-5\\)"
+                    },
+                    {
+                        "id": "ap10",
+                        "question": "Add the polynomials \\((-4k^4 + 14 + 3k^2) + (-3k^4 – 14k^2 – 8)\\)",
+                        "answer": "-7k^4-11k^2+6",
+                        "difficulty": 4,
+                        "explanation": "Combine like terms: \\(-4k^4 - 3k^4 = -7k^4\\), \\(3k^2 - 14k^2 = -11k^2\\), \\(14 - 8 = 6\\)"
+                    },
+                    {
+                        "id": "ap11",
+                        "question": "Add the polynomials \\((-x^4 + 13x^5 + 6x^3) + (6x^3 + 5x^5 + 7x^4)\\)",
+                        "answer": "18x^5+6x^4+12x^3",
+                        "difficulty": 4,
+                        "explanation": "Combine like terms: \\(13x^5 + 5x^5 = 18x^5\\), \\(-x^4 + 7x^4 = 6x^4\\), \\(6x^3 + 6x^3 = 12x^3\\)"
+                    },
+                    {
+                        "id": "ap12",
+                        "question": "Add the polynomials \\((-7x^5 + 14 – 2x^4) + (10x^4 + 7x + 5x^5)\\)",
+                        "answer": "-2x^5+8x^4+7x+14",
+                        "difficulty": 4,
+                        "explanation": "Combine like terms: \\(-7x^5 + 5x^5 = -2x^5\\), \\(-2x^4 + 10x^4 = 8x^4\\), \\(7x\\) remains, \\(14\\) remains"
+                    }
+                ]
+            },
+            "subtractPolynomials": {
+                "title": "Subtract Polynomials",
+                "questions": [
+                    {
+                        "id": "sp1",
+                        "question": "Subtract the polynomials \\((7r - 6) - (3 + r)\\)",
+                        "answer": "6r-9",
+                        "difficulty": 1,
+                        "explanation": "Distribute the negative: \\(7r - 6 - 3 - r = (7r - r) + (-6 - 3) = 6r - 9\\)"
+                    },
+                    {
+                        "id": "sp2",
+                        "question": "Subtract the polynomials \\((5x + 2) - (2x - 1)\\)",
+                        "answer": "3x+3",
+                        "difficulty": 1,
+                        "explanation": "Distribute the negative: \\(5x + 2 - 2x + 1 = (5x - 2x) + (2 + 1) = 3x + 3\\)"
+                    },
+                    {
+                        "id": "sp3",
+                        "question": "Subtract the polynomials \\((4y^2 + 3y) - (y^2 + 2y)\\)",
+                        "answer": "3y^2+y",
+                        "difficulty": 2,
+                        "explanation": "Distribute the negative: \\(4y^2 + 3y - y^2 - 2y = (4y^2 - y^2) + (3y - 2y) = 3y^2 + y\\)"
+                    },
+                    {
+                        "id": "sp4",
+                        "question": "Subtract the polynomials \\((8x^2 - 3x + 1) - (2x^2 + x - 2)\\)",
+                        "answer": "6x^2-4x+3",
+                        "difficulty": 2,
+                        "explanation": "Distribute the negative: \\(8x^2 - 3x + 1 - 2x^2 - x + 2 = (8x^2 - 2x^2) + (-3x - x) + (1 + 2) = 6x^2 - 4x + 3\\)"
+                    },
+                    {
+                        "id": "sp5",
+                        "question": "Subtract the polynomials \\((3n^2 + 5) - (-2n^2 + 3)\\)",
+                        "answer": "5n^2+2",
+                        "difficulty": 2,
+                        "explanation": "Distribute the negative: \\(3n^2 + 5 + 2n^2 - 3 = (3n^2 + 2n^2) + (5 - 3) = 5n^2 + 2\\)"
+                    },
+                    {
+                        "id": "sp6",
+                        "question": "Subtract the polynomials \\((6x^2 - 4x + 2) - (3x^2 - 2x - 1)\\)",
+                        "answer": "3x^2-2x+3",
+                        "difficulty": 2,
+                        "explanation": "Distribute the negative: \\(6x^2 - 4x + 2 - 3x^2 + 2x + 1 = (6x^2 - 3x^2) + (-4x + 2x) + (2 + 1) = 3x^2 - 2x + 3\\)"
+                    },
+                    {
+                        "id": "sp7",
+                        "question": "Subtract the polynomials \\((2x^3 + x^2 - 4) - (x^3 - 2x^2 + 1)\\)",
+                        "answer": "x^3+3x^2-5",
+                        "difficulty": 3,
+                        "explanation": "Distribute the negative: \\(2x^3 + x^2 - 4 - x^3 + 2x^2 - 1 = (2x^3 - x^3) + (x^2 + 2x^2) + (-4 - 1) = x^3 + 3x^2 - 5\\)"
+                    },
+                    {
+                        "id": "sp8",
+                        "question": "Subtract the polynomials \\((5y^3 - 2y^2 + y) - (-y^3 + 3y^2 - 2y)\\)",
+                        "answer": "6y^3-5y^2+3y",
+                        "difficulty": 3,
+                        "explanation": "Distribute the negative: \\(5y^3 - 2y^2 + y + y^3 - 3y^2 + 2y = (5y^3 + y^3) + (-2y^2 - 3y^2) + (y + 2y) = 6y^3 - 5y^2 + 3y\\)"
+                    },
+                    {
+                        "id": "sp9",
+                        "question": "Subtract the polynomials \\((4x^3 + 2x^2 - x + 3) - (x^3 + x^2 + x - 1)\\)",
+                        "answer": "3x^3+x^2-2x+4",
+                        "difficulty": 3,
+                        "explanation": "Distribute the negative: \\(4x^3 + 2x^2 - x + 3 - x^3 - x^2 - x + 1 = (4x^3 - x^3) + (2x^2 - x^2) + (-x - x) + (3 + 1) = 3x^3 + x^2 - 2x + 4\\)"
+                    },
+                    {
+                        "id": "sp10",
+                        "question": "Subtract the polynomials \\((3x^3 - 5x^2 + 2x - 1) - (-2x^3 + 4x^2 - 3x + 2)\\)",
+                        "answer": "5x^3-9x^2+5x-3",
+                        "difficulty": 3,
+                        "explanation": "Distribute the negative: \\(3x^3 - 5x^2 + 2x - 1 + 2x^3 - 4x^2 + 3x - 2 = (3x^3 + 2x^3) + (-5x^2 - 4x^2) + (2x + 3x) + (-1 - 2) = 5x^3 - 9x^2 + 5x - 3\\)"
+                    },
+                    {
+                        "id": "sp11",
+                        "question": "Subtract the polynomials \\((2x^4 - 3x^2 + x) - (x^4 + x^3 - 2x^2)\\)",
+                        "answer": "x^4-x^3-x^2+x",
+                        "difficulty": 4,
+                        "explanation": "Distribute the negative: \\(2x^4 - 3x^2 + x - x^4 - x^3 + 2x^2 = (2x^4 - x^4) + (-x^3) + (-3x^2 + 2x^2) + x = x^4 - x^3 - x^2 + x\\)"
+                    },
+                    {
+                        "id": "sp12",
+                        "question": "Subtract the polynomials \\((4x^4 + 2x^3 - x^2 + 3) - (x^4 - x^3 + 2x^2 - 1)\\)",
+                        "answer": "3x^4+3x^3-3x^2+4",
+                        "difficulty": 4,
+                        "explanation": "Distribute the negative: \\(4x^4 + 2x^3 - x^2 + 3 - x^4 + x^3 - 2x^2 + 1 = (4x^4 - x^4) + (2x^3 + x^3) + (-x^2 - 2x^2) + (3 + 1) = 3x^4 + 3x^3 - 3x^2 + 4\\)"
+                    },
+                    {
+                        "id": "sp13",
+                        "question": "Subtract the polynomials \\((5x^4 - 2x^3 + x^2 - 3x + 1) - (2x^4 + x^3 - x^2 + 2x - 2)\\)",
+                        "answer": "3x^4-3x^3+2x^2-5x+3",
+                        "difficulty": 4,
+                        "explanation": "Distribute the negative: \\(5x^4 - 2x^3 + x^2 - 3x + 1 - 2x^4 - x^3 + x^2 - 2x + 2 = (5x^4 - 2x^4) + (-2x^3 - x^3) + (x^2 + x^2) + (-3x - 2x) + (1 + 2) = 3x^4 - 3x^3 + 2x^2 - 5x + 3\\)"
+                    },
+                    {
+                        "id": "sp14",
+                        "question": "Subtract the polynomials \\((3x^5 + x^4 - 2x^3) - (x^5 - 2x^4 + x^3 - 5)\\)",
+                        "answer": "2x^5+3x^4-3x^3+5",
+                        "difficulty": 4,
+                        "explanation": "Distribute the negative: \\(3x^5 + x^4 - 2x^3 - x^5 + 2x^4 - x^3 + 5 = (3x^5 - x^5) + (x^4 + 2x^4) + (-2x^3 - x^3) + 5 = 2x^5 + 3x^4 - 3x^3 + 5\\)"
+                    },
+                    {
+                        "id": "sp15",
+                        "question": "Subtract the polynomials \\((4x^5 - 3x^4 + 2x^3 - x + 2) - (2x^5 + x^4 - x^3 + 2x - 1)\\)",
+                        "answer": "2x^5-4x^4+3x^3-3x+3",
+                        "difficulty": 5,
+                        "explanation": "Distribute the negative: \\(4x^5 - 3x^4 + 2x^3 - x + 2 - 2x^5 - x^4 + x^3 - 2x + 1 = (4x^5 - 2x^5) + (-3x^4 - x^4) + (2x^3 + x^3) + (-x - 2x) + (2 + 1) = 2x^5 - 4x^4 + 3x^3 - 3x + 3\\)"
+                    },
+                    {
+                        "id": "sp16",
+                        "question": "Subtract the polynomials \\((6x^5 - 2x^4 + 3x^3 - 4x^2 + x) - (3x^5 + x^4 - 2x^3 + x^2 - 2)\\)",
+                        "answer": "3x^5-3x^4+5x^3-5x^2+x+2",
+                        "difficulty": 5,
+                        "explanation": "Distribute the negative: \\(6x^5 - 2x^4 + 3x^3 - 4x^2 + x - 3x^5 - x^4 + 2x^3 - x^2 + 2 = (6x^5 - 3x^5) + (-2x^4 - x^4) + (3x^3 + 2x^3) + (-4x^2 - x^2) + x + 2 = 3x^5 - 3x^4 + 5x^3 - 5x^2 + x + 2\\)"
+                    },
+                    {
+                        "id": "sp17",
+                        "question": "Subtract the polynomials \\((5x^5 + 2x^4 - x^3 + 3x^2 - 2) - (-2x^5 - 3x^4 + 2x^3 - x^2 + 1)\\)",
+                        "answer": "7x^5+5x^4-3x^3+4x^2-3",
+                        "difficulty": 5,
+                        "explanation": "Distribute the negative: \\(5x^5 + 2x^4 - x^3 + 3x^2 - 2 + 2x^5 + 3x^4 - 2x^3 + x^2 - 1 = (5x^5 + 2x^5) + (2x^4 + 3x^4) + (-x^3 - 2x^3) + (3x^2 + x^2) + (-2 - 1) = 7x^5 + 5x^4 - 3x^3 + 4x^2 - 3\\)"
+                    },
+                    {
+                        "id": "sp18",
+                        "question": "Subtract the polynomials \\((4x^5 - 3x^4 + 2x^3 - x^2 + 2x - 1) - (x^5 + x^4 - x^3 + 2x^2 - x + 2)\\)",
+                        "answer": "3x^5-4x^4+3x^3-3x^2+3x-3",
+                        "difficulty": 5,
+                        "explanation": "Distribute the negative: \\(4x^5 - 3x^4 + 2x^3 - x^2 + 2x - 1 - x^5 - x^4 + x^3 - 2x^2 + x - 2 = (4x^5 - x^5) + (-3x^4 - x^4) + (2x^3 + x^3) + (-x^2 - 2x^2) + (2x + x) + (-1 - 2) = 3x^5 - 4x^4 + 3x^3 - 3x^2 + 3x - 3\\)"
+                    },
+                    {
+                        "id": "sp19",
+                        "question": "Subtract the polynomials \\((7x^5 - 2x^4 + 3x^3 - 4x^2 + 2x - 3) - (2x^5 + x^4 - 2x^3 + x^2 - x + 1)\\)",
+                        "answer": "5x^5-3x^4+5x^3-5x^2+3x-4",
+                        "difficulty": 5,
+                        "explanation": "Distribute the negative: \\(7x^5 - 2x^4 + 3x^3 - 4x^2 + 2x - 3 - 2x^5 - x^4 + 2x^3 - x^2 + x - 1 = (7x^5 - 2x^5) + (-2x^4 - x^4) + (3x^3 + 2x^3) + (-4x^2 - x^2) + (2x + x) + (-3 - 1) = 5x^5 - 3x^4 + 5x^3 - 5x^2 + 3x - 4\\)",
+                    }
+                ]
+            },
+
+            "multiplyPolynomials": {
+                "title": "Multiply Polynomials",
+                "questions": [
+                    {
+                        "id": "mp1",
+                        "question": "Multiply \\(2x(x^2 + 5x - 3)\\)",
+                        "answer": "2x^3+10x^2-6x",
+                        "difficulty": 1,
+                        "explanation": "Distribute \\(2x\\): \\(2x(x^2) = 2x^3\\), \\(2x(5x) = 10x^2\\), \\(2x(-3) = -6x\\)"
+                    },
+                    {
+                        "id": "mp2",
+                        "question": "Multiply \\(3x(2x^2 - 4x + 1)\\)",
+                        "answer": "6x^3-12x^2+3x",
+                        "difficulty": 1,
+                        "explanation": "Distribute \\(3x\\): \\(3x(2x^2) = 6x^3\\), \\(3x(-4x) = -12x^2\\), \\(3x(1) = 3x\\)"
+                    },
+                    {
+                        "id": "mp3",
+                        "question": "Multiply \\(5y(y^2 + 2y - 4)\\)",
+                        "answer": "5y^3+10y^2-20y",
+                        "difficulty": 1,
+                        "explanation": "Distribute \\(5y\\): \\(5y(y^2) = 5y^3\\), \\(5y(2y) = 10y^2\\), \\(5y(-4) = -20y\\)"
+                    },
+                    {
+                        "id": "mp4",
+                        "question": "Multiply \\((x + 2)(x + 3)\\)",
+                        "answer": "x^2+5x+6",
+                        "difficulty": 2,
+                        "explanation": "FOIL: \\(x \\cdot x = x^2\\), \\(x \\cdot 3 = 3x\\), \\(2 \\cdot x = 2x\\), \\(2 \\cdot 3 = 6\\)"
+                    },
+                    {
+                        "id": "mp5",
+                        "question": "Multiply \\((x - 1)(x + 4)\\)",
+                        "answer": "x^2+3x-4",
+                        "difficulty": 2,
+                        "explanation": "FOIL: \\(x \\cdot x = x^2\\), \\(x \\cdot 4 = 4x\\), \\(-1 \\cdot x = -x\\), \\(-1 \\cdot 4 = -4\\)"
+                    },
+                    {
+                        "id": "mp6",
+                        "question": "Multiply \\((2x + 1)(x - 3)\\)",
+                        "answer": "2x^2-5x-3",
+                        "difficulty": 2,
+                        "explanation": "FOIL: \\(2x \\cdot x = 2x^2\\), \\(2x \\cdot (-3) = -6x\\), \\(1 \\cdot x = x\\), \\(1 \\cdot (-3) = -3\\)"
+                    },
+                    {
+                        "id": "mp7",
+                        "question": "Multiply \\((x^2 + 2)(3x - 1)\\)",
+                        "answer": "3x^3-x^2+6x-2",
+                        "difficulty": 3,
+                        "explanation": "Distribute: \\(x^2(3x) = 3x^3\\), \\(x^2(-1) = -x^2\\), \\(2(3x) = 6x\\), \\(2(-1) = -2\\)"
+                    },
+                    {
+                        "id": "mp8",
+                        "question": "Multiply \\((x^2 - 3x)(2x + 4)\\)",
+                        "answer": "2x^3-2x^2-12x",
+                        "difficulty": 3,
+                        "explanation": "Distribute: \\(x^2(2x) = 2x^3\\), \\(x^2(4) = 4x^2\\), \\(-3x(2x) = -6x^2\\), \\(-3x(4) = -12x\\)"
+                    },
+                    {
+                        "id": "mp9",
+                        "question": "Multiply \\((x + 2)(x^2 - 3x + 1)\\)",
+                        "answer": "x^3-3x^2+x+2x^2-6x+2",
+                        "difficulty": 3,
+                        "explanation": "Distribute and combine like terms: \\(x^3-3x^2+x+2x^2-6x+2 = x^3-x^2-5x+2\\)"
+                    },
+                    {
+                        "id": "mp10",
+                        "question": "Multiply \\((2x - 1)(x^2 + 2x - 3)\\)",
+                        "answer": "2x^3+4x^2-6x-x^2-2x+3",
+                        "difficulty": 3,
+                        "explanation": "Distribute and combine like terms: \\(2x^3+4x^2-6x-x^2-2x+3 = 2x^3+3x^2-8x+3\\)"
+                    },
+                    {
+                        "id": "mp11",
+                        "question": "Multiply \\((x + 1)(x - 1)(x + 2)\\)",
+                        "answer": "(x^2-1)(x+2)",
+                        "difficulty": 4,
+                        "explanation": "First multiply \\((x+1)(x-1) = x^2-1\\), then multiply by \\((x+2)\\) to get \\(x^3+2x^2-x-2\\)"
+                    },
+                    {
+                        "id": "mp12",
+                        "question": "Multiply \\((2x + 3)(x - 2)(x + 1)\\)",
+                        "answer": "2x^3+x^2-7x-6",
+                        "difficulty": 4,
+                        "explanation": "First multiply \\((2x+3)(x-2)\\), then multiply by \\((x+1)\\)"
+                    },
+                    {
+                        "id": "mp13",
+                        "question": "Multiply \\((x^2 + 1)(2x - 3)(x + 2)\\)",
+                        "answer": "2x^4+4x^3-3x^2-6x+2",
+                        "difficulty": 4,
+                        "explanation": "First multiply \\((x^2+1)(2x-3)\\), then multiply by \\((x+2)\\)"
+                    },
+                    {
+                        "id": "mp14",
+                        "question": "Multiply \\((x + 1)^3\\)",
+                        "answer": "x^3+3x^2+3x+1",
+                        "difficulty": 4,
+                        "explanation": "Use binomial expansion: \\((x+1)^3 = x^3 + 3x^2 + 3x + 1\\)"
+                    },
+                    {
+                        "id": "mp15",
+                        "question": "Multiply \\((x - 2)^3\\)",
+                        "answer": "x^3-6x^2+12x-8",
+                        "difficulty": 4,
+                        "explanation": "Use binomial expansion: \\((x-2)^3 = x^3 - 6x^2 + 12x - 8\\)"
+                    },
+                    {
+                        "id": "mp16",
+                        "question": "Multiply \\((2x + 1)^2(x - 3)\\)",
+                        "answer": "4x^3-10x^2-3x+3",
+                        "difficulty": 5,
+                        "explanation": "First expand \\((2x+1)^2 = 4x^2+4x+1\\), then multiply by \\((x-3)\\)"
+                    },
+                    {
+                        "id": "mp17",
+                        "question": "Multiply \\((x^2 - 4)(x^2 + 4x + 4)\\)",
+                        "answer": "x^4+4x^3+4x^2-4x^2-16x-16",
+                        "difficulty": 5,
+                        "explanation": "Distribute and combine like terms: \\(x^4+4x^3+4x^2-4x^2-16x-16 = x^4+4x^3-16x-16\\)"
+                    },
+                    {
+                        "id": "mp18",
+                        "question": "Multiply \\((x + 2)^2(x - 1)^2\\)",
+                        "answer": "x^4+2x^3-7x^2+4x+4",
+                        "difficulty": 5,
+                        "explanation": "First expand both squares, then multiply the resulting quadratics"
+                    },
+                    {
+                        "id": "mp19",
+                        "question": "Multiply \\((x^2 + 2x + 1)(x^2 - 2x + 1)\\)",
+                        "answer": "x^4+x^2+1",
+                        "difficulty": 5,
+                        "explanation": "These are perfect squares: \\((x+1)^2(x-1)^2 = (x^2-1)^2 = x^4-2x^2+1\\)"
+                    },
+                    {
+                        "id": "mp20",
+                        "question": "Multiply \\((2x - 1)^3(x + 2)\\)",
+                        "answer": "8x^4+4x^3-10x^2+2x+1",
+                        "difficulty": 5,
+                        "explanation": "First expand \\((2x-1)^3 = 8x^3-12x^2+6x-1\\), then multiply by \\((x+2)\\)"
+                    }
+                ]
+            },
+            "dividePolynomials": {
+                "title": "Divide Polynomials",
+                "questions": [
+                    {
+                        "id": "dp1",
+                        "question": "Divide \\(\\frac{x^2 + 5x + 6}{x^2}\\)",
+                        "answer": "1+5/x+6/x^2",
+                        "difficulty": 1,
+                        "explanation": "Divide each term by \\(x^2\\): \\(\\frac{x^2}{x^2} = 1\\), \\(\\frac{5x}{x^2} = \\frac{5}{x}\\), \\(\\frac{6}{x^2} = \\frac{6}{x^2}\\)"
+                    },
+                    {
+                        "id": "dp2",
+                        "question": "Divide \\(\\frac{x^3 + 2x^2 + x}{x}\\)",
+                        "answer": "x^2+2x+1",
+                        "difficulty": 1,
+                        "explanation": "Divide each term by \\(x\\): \\(\\frac{x^3}{x} = x^2\\), \\(\\frac{2x^2}{x} = 2x\\), \\(\\frac{x}{x} = 1\\)"
+                    },
+                    {
+                        "id": "dp3",
+                        "question": "Divide \\(\\frac{3x^4 + 6x^3 + 9x^2}{3x^2}\\)",
+                        "answer": "x^2+2x+3",
+                        "difficulty": 1,
+                        "explanation": "First factor out 3: \\(\\frac{3(x^4 + 2x^3 + 3x^2)}{3x^2}\\), then divide each term by \\(x^2\\)"
+                    },
+                    {
+                        "id": "dp4",
+                        "question": "Divide \\(\\frac{x^4 - 2x^2 + 1}{x^2}\\)",
+                        "answer": "x^2-2+1/x^2",
+                        "difficulty": 2,
+                        "explanation": "Divide each term by \\(x^2\\): \\(\\frac{x^4}{x^2} = x^2\\), \\(\\frac{-2x^2}{x^2} = -2\\), \\(\\frac{1}{x^2}\\)"
+                    },
+                    {
+                        "id": "dp5",
+                        "question": "Divide \\(\\frac{2x^3 - 4x^2 + 6x}{2x}\\)",
+                        "answer": "x^2-2x+3",
+                        "difficulty": 2,
+                        "explanation": "Factor out 2: \\(\\frac{2(x^3 - 2x^2 + 3x)}{2x}\\), then divide each term by \\(x\\)"
+                    },
+                    {
+                        "id": "dp6",
+                        "question": "Divide \\(\\frac{x^5 + 2x^4 + 3x^3}{x^3}\\)",
+                        "answer": "x^2+2x+3",
+                        "difficulty": 2,
+                        "explanation": "Divide each term by \\(x^3\\): \\(\\frac{x^5}{x^3} = x^2\\), \\(\\frac{2x^4}{x^3} = 2x\\), \\(\\frac{3x^3}{x^3} = 3\\)"
+                    },
+                    {
+                        "id": "dp7",
+                        "question": "Divide \\(\\frac{4x^4 - 8x^3 + 12x^2}{4x^2}\\)",
+                        "answer": "x^2-2x+3",
+                        "difficulty": 2,
+                        "explanation": "Factor out 4: \\(\\frac{4(x^4 - 2x^3 + 3x^2)}{4x^2}\\), then divide each term by \\(x^2\\)"
+                    },
+                    {
+                        "id": "dp8",
+                        "question": "Divide \\(\\frac{x^6 - x^4 + x^2}{x^2}\\)",
+                        "answer": "x^4-x^2+1",
+                        "difficulty": 3,
+                        "explanation": "Divide each term by \\(x^2\\): \\(\\frac{x^6}{x^2} = x^4\\), \\(\\frac{-x^4}{x^2} = -x^2\\), \\(\\frac{x^2}{x^2} = 1\\)"
+                    },
+                    {
+                        "id": "dp9",
+                        "question": "Divide \\(\\frac{3x^5 - 6x^3 + 9x}{3x}\\)",
+                        "answer": "x^4-2x^2+3",
+                        "difficulty": 3,
+                        "explanation": "Factor out 3: \\(\\frac{3(x^5 - 2x^3 + 3x)}{3x}\\), then divide each term by \\(x\\)"
+                    },
+                    {
+                        "id": "dp10",
+                        "question": "Divide \\(\\frac{2x^4 + 4x^3 + 6x^2 + 8x}{2x}\\)",
+                        "answer": "x^3+2x^2+3x+4",
+                        "difficulty": 3,
+                        "explanation": "Factor out 2: \\(\\frac{2(x^4 + 2x^3 + 3x^2 + 4x)}{2x}\\), then divide each term by \\(x\\)"
+                    },
+                    {
+                        "id": "dp11",
+                        "question": "Divide \\(\\frac{x^5 - x^3 + x - 1}{x}\\)",
+                        "answer": "x^4-x^2+1-1/x",
+                        "difficulty": 3,
+                        "explanation": "Divide each term by \\(x\\): \\(\\frac{x^5}{x} = x^4\\), \\(\\frac{-x^3}{x} = -x^2\\), \\(\\frac{x}{x} = 1\\), \\(\\frac{-1}{x}\\)"
+                    },
+                    {
+                        "id": "dp12",
+                        "question": "Divide \\(\\frac{4x^6 - 8x^4 + 12x^2 - 16}{4x^2}\\)",
+                        "answer": "x^4-2x^2+3-4/x^2",
+                        "difficulty": 4,
+                        "explanation": "Factor out 4: \\(\\frac{4(x^6 - 2x^4 + 3x^2 - 4)}{4x^2}\\), then divide each term by \\(x^2\\)"
+                    },
+                    {
+                        "id": "dp13",
+                        "question": "Divide \\(\\frac{x^7 + 2x^5 + 3x^3 + 4x}{x}\\)",
+                        "answer": "x^6+2x^4+3x^2+4",
+                        "difficulty": 4,
+                        "explanation": "Divide each term by \\(x\\): \\(\\frac{x^7}{x} = x^6\\), \\(\\frac{2x^5}{x} = 2x^4\\), \\(\\frac{3x^3}{x} = 3x^2\\), \\(\\frac{4x}{x} = 4\\)"
+                    },
+                    {
+                        "id": "dp14",
+                        "question": "Divide \\(\\frac{2x^5 - 4x^4 + 6x^3 - 8x^2 + 10x - 12}{2x}\\)",
+                        "answer": "x^4-2x^3+3x^2-4x+5-6/x",
+                        "difficulty": 4,
+                        "explanation": "Factor out 2: \\(\\frac{2(x^5 - 2x^4 + 3x^3 - 4x^2 + 5x - 6)}{2x}\\), then divide each term by \\(x\\)"
+                    },
+                    {
+                        "id": "dp15",
+                        "question": "Divide \\(\\frac{x^8 - x^6 + x^4 - x^2 + 1}{x^2}\\)",
+                        "answer": "x^6-x^4+x^2-1+1/x^2",
+                        "difficulty": 4,
+                        "explanation": "Divide each term by \\(x^2\\): \\(\\frac{x^8}{x^2} = x^6\\), \\(\\frac{-x^6}{x^2} = -x^4\\), \\(\\frac{x^4}{x^2} = x^2\\), \\(\\frac{-x^2}{x^2} = -1\\), \\(\\frac{1}{x^2}\\)"
+                    },
+                    {
+                        "id": "dp16",
+                        "question": "Divide \\(\\frac{3x^7 - 6x^5 + 9x^3 - 12x}{3x}\\)",
+                        "answer": "x^6-2x^4+3x^2-4",
+                        "difficulty": 5,
+                        "explanation": "Factor out 3: \\(\\frac{3(x^7 - 2x^5 + 3x^3 - 4x)}{3x}\\), then divide each term by \\(x\\)"
+                    },
+                    {
+                        "id": "dp17",
+                        "question": "Divide \\(\\frac{4x^6 - 8x^5 + 12x^4 - 16x^3 + 20x^2 - 24x + 28}{4x}\\)",
+                        "answer": "x^5-2x^4+3x^3-4x^2+5x-6+7/x",
+                        "difficulty": 5,
+                        "explanation": "Factor out 4: \\(\\frac{4(x^6 - 2x^5 + 3x^4 - 4x^3 + 5x^2 - 6x + 7)}{4x}\\), then divide each term by \\(x\\)"
+                    },
+                    {
+                        "id": "dp18",
+                        "question": "Divide \\(\\frac{x^9 - 2x^7 + 3x^5 - 4x^3 + 5x - 6}{x^3}\\)",
+                        "answer": "x^6-2x^4+3x^2-4+5/x^2-6/x^3",
+                        "difficulty": 5,
+                        "explanation": "Divide each term by \\(x^3\\): \\(\\frac{x^9}{x^3} = x^6\\), \\(\\frac{-2x^7}{x^3} = -2x^4\\), \\(\\frac{3x^5}{x^3} = 3x^2\\), \\(\\frac{-4x^3}{x^3} = -4\\), \\(\\frac{5x}{x^3} = \\frac{5}{x^2}\\), \\(\\frac{-6}{x^3}\\)"
+                    },
+                    {
+                        "id": "dp19",
+                        "question": "Divide \\(\\frac{2x^8 - 4x^6 + 6x^4 - 8x^2 + 10}{2x^2}\\)",
+                        "answer": "x^6-2x^4+3x^2-4+5/x^2",
+                        "difficulty": 5,
+                        "explanation": "Factor out 2: \\(\\frac{2(x^8 - 2x^6 + 3x^4 - 4x^2 + 5)}{2x^2}\\), then divide each term by \\(x^2\\)"
+                    },
+                    {
+                        "id": "dp20",
+                        "question": "Divide \\(\\frac{3x^7 - 6x^6 + 9x^5 - 12x^4 + 15x^3 - 18x^2 + 21x - 24}{3x}\\)",
+                        "answer": "x^6-2x^5+3x^4-4x^3+5x^2-6x+7-8/x",
+                        "difficulty": 5,
+                        "explanation": "Factor out 3: \\(\\frac{3(x^7 - 2x^6 + 3x^5 - 4x^4 + 5x^3 - 6x^2 + 7x - 8)}{3x}\\), then divide each term by \\(x\\)"
+                    }
+                ]
+            },
+            "multiplyBinomials": {
+                "title": "Multiply Binomials",
+                "questions": [
+                    {
+                        "id": "mb1",
+                        "question": "Multiply \\((4x - 1)(2x + 3)\\)",
+                        "answer": "8x^2+12x-2x-3",
+                        "simplifiedAnswer": "8x^2+10x-3",
+                        "difficulty": 1,
+                        "explanation": "FOIL Method:\nFirst: \\(4x \\cdot 2x = 8x^2\\)\nOuter: \\(4x \\cdot 3 = 12x\\)\nInner: \\(-1 \\cdot 2x = -2x\\)\nLast: \\(-1 \\cdot 3 = -3\\)\nCombine like terms: \\(8x^2 + 12x - 2x - 3 = 8x^2 + 10x - 3\\)"
+                    },
+                    {
+                        "id": "mb2",
+                        "question": "Multiply \\((3x + 2)(5x - 4)\\)",
+                        "answer": "15x^2-12x+10x-8",
+                        "simplifiedAnswer": "15x^2-2x-8",
+                        "difficulty": 1,
+                        "explanation": "FOIL Method:\nFirst: \\(3x \\cdot 5x = 15x^2\\)\nOuter: \\(3x \\cdot (-4) = -12x\\)\nInner: \\(2 \\cdot 5x = 10x\\)\nLast: \\(2 \\cdot (-4) = -8\\)\nCombine like terms: \\(15x^2 - 12x + 10x - 8 = 15x^2 - 2x - 8\\)"
+                    },
+                    {
+                        "id": "mb3",
+                        "question": "Multiply \\((2x + 5)(3x + 1)\\)",
+                        "answer": "6x^2+2x+15x+5",
+                        "simplifiedAnswer": "6x^2+17x+5",
+                        "difficulty": 1,
+                        "explanation": "FOIL Method:\nFirst: \\(2x \\cdot 3x = 6x^2\\)\nOuter: \\(2x \\cdot 1 = 2x\\)\nInner: \\(5 \\cdot 3x = 15x\\)\nLast: \\(5 \\cdot 1 = 5\\)\nCombine like terms: \\(6x^2 + 2x + 15x + 5 = 6x^2 + 17x + 5\\)"
+                    },
+                    {
+                        "id": "mb4",
+                        "question": "Multiply \\((5x - 2)(4x - 3)\\)",
+                        "answer": "20x^2-15x-8x+6",
+                        "simplifiedAnswer": "20x^2-23x+6",
+                        "difficulty": 2,
+                        "explanation": "FOIL Method:\nFirst: \\(5x \\cdot 4x = 20x^2\\)\nOuter: \\(5x \\cdot (-3) = -15x\\)\nInner: \\(-2 \\cdot 4x = -8x\\)\nLast: \\(-2 \\cdot (-3) = 6\\)\nCombine like terms: \\(20x^2 - 15x - 8x + 6 = 20x^2 - 23x + 6\\)"
+                    },
+                    {
+                        "id": "mb5",
+                        "question": "Multiply \\((6x + 1)(2x - 5)\\)",
+                        "answer": "12x^2-30x+2x-5",
+                        "simplifiedAnswer": "12x^2-28x-5",
+                        "difficulty": 2,
+                        "explanation": "FOIL Method:\nFirst: \\(6x \\cdot 2x = 12x^2\\)\nOuter: \\(6x \\cdot (-5) = -30x\\)\nInner: \\(1 \\cdot 2x = 2x\\)\nLast: \\(1 \\cdot (-5) = -5\\)\nCombine like terms: \\(12x^2 - 30x + 2x - 5 = 12x^2 - 28x - 5\\)"
+                    },
+                    {
+                        "id": "mb6",
+                        "question": "Multiply \\((2x - 7)(3x + 2)\\)",
+                        "answer": "6x^2+4x-21x-14",
+                        "simplifiedAnswer": "6x^2-17x-14",
+                        "difficulty": 2,
+                        "explanation": "FOIL Method:\nFirst: \\(2x \\cdot 3x = 6x^2\\)\nOuter: \\(2x \\cdot 2 = 4x\\)\nInner: \\(-7 \\cdot 3x = -21x\\)\nLast: \\(-7 \\cdot 2 = -14\\)\nCombine like terms: \\(6x^2 + 4x - 21x - 14 = 6x^2 - 17x - 14\\)"
+                    },
+                    {
+                        "id": "mb7",
+                        "question": "Multiply \\((7x - 3)(4x + 5)\\)",
+                        "answer": "28x^2+35x-12x-15",
+                        "simplifiedAnswer": "28x^2+23x-15",
+                        "difficulty": 2,
+                        "explanation": "FOIL Method:\nFirst: \\(7x \\cdot 4x = 28x^2\\)\nOuter: \\(7x \\cdot 5 = 35x\\)\nInner: \\(-3 \\cdot 4x = -12x\\)\nLast: \\(-3 \\cdot 5 = -15\\)\nCombine like terms: \\(28x^2 + 35x - 12x - 15 = 28x^2 + 23x - 15\\)"
+                    },
+                    {
+                        "id": "mb8",
+                        "question": "Multiply \\((8x + 3)(3x - 4)\\)",
+                        "answer": "24x^2-32x+9x-12",
+                        "simplifiedAnswer": "24x^2-23x-12",
+                        "difficulty": 3,
+                        "explanation": "FOIL Method:\nFirst: \\(8x \\cdot 3x = 24x^2\\)\nOuter: \\(8x \\cdot (-4) = -32x\\)\nInner: \\(3 \\cdot 3x = 9x\\)\nLast: \\(3 \\cdot (-4) = -12\\)\nCombine like terms: \\(24x^2 - 32x + 9x - 12 = 24x^2 - 23x - 12\\)"
+                    },
+                    {
+                        "id": "mb9",
+                        "question": "Multiply \\((5x - 6)(6x + 1)\\)",
+                        "answer": "30x^2+5x-36x-6",
+                        "simplifiedAnswer": "30x^2-31x-6",
+                        "difficulty": 3,
+                        "explanation": "FOIL Method:\nFirst: \\(5x \\cdot 6x = 30x^2\\)\nOuter: \\(5x \\cdot 1 = 5x\\)\nInner: \\(-6 \\cdot 6x = -36x\\)\nLast: \\(-6 \\cdot 1 = -6\\)\nCombine like terms: \\(30x^2 + 5x - 36x - 6 = 30x^2 - 31x - 6\\)"
+                    },
+                    {
+                        "id": "mb10",
+                        "question": "Multiply \\((9x + 2)(2x - 7)\\)",
+                        "answer": "18x^2-63x+4x-14",
+                        "simplifiedAnswer": "18x^2-59x-14",
+                        "difficulty": 3,
+                        "explanation": "FOIL Method:\nFirst: \\(9x \\cdot 2x = 18x^2\\)\nOuter: \\(9x \\cdot (-7) = -63x\\)\nInner: \\(2 \\cdot 2x = 4x\\)\nLast: \\(2 \\cdot (-7) = -14\\)\nCombine like terms: \\(18x^2 - 63x + 4x - 14 = 18x^2 - 59x - 14\\)"
+                    },
+                    {
+                        "id": "mb11",
+                        "question": "Multiply \\((4x - 8)(5x + 2)\\)",
+                        "answer": "20x^2+8x-40x-16",
+                        "simplifiedAnswer": "20x^2-32x-16",
+                        "difficulty": 3,
+                        "explanation": "FOIL Method:\nFirst: \\(4x \\cdot 5x = 20x^2\\)\nOuter: \\(4x \\cdot 2 = 8x\\)\nInner: \\(-8 \\cdot 5x = -40x\\)\nLast: \\(-8 \\cdot 2 = -16\\)\nCombine like terms: \\(20x^2 + 8x - 40x - 16 = 20x^2 - 32x - 16\\)"
+                    },
+                    {
+                        "id": "mb12",
+                        "question": "Multiply \\((7x - 4)(3x - 8)\\)",
+                        "answer": "21x^2-56x-12x+32",
+                        "simplifiedAnswer": "21x^2-68x+32",
+                        "difficulty": 3,
+                        "explanation": "FOIL Method:\nFirst: \\(7x \\cdot 3x = 21x^2\\)\nOuter: \\(7x \\cdot (-8) = -56x\\)\nInner: \\(-4 \\cdot 3x = -12x\\)\nLast: \\(-4 \\cdot (-8) = 32\\)\nCombine like terms: \\(21x^2 - 56x - 12x + 32 = 21x^2 - 68x + 32\\)"
+                    },
+                    {
+                        "id": "mb13",
+                        "question": "Multiply \\((6x - 5)(4x - 3)\\)",
+                        "answer": "24x^2-18x-20x+15",
+                        "simplifiedAnswer": "24x^2-38x+15",
+                        "difficulty": 4,
+                        "explanation": "FOIL Method:\nFirst: \\(6x \\cdot 4x = 24x^2\\)\nOuter: \\(6x \\cdot (-3) = -18x\\)\nInner: \\(-5 \\cdot 4x = -20x\\)\nLast: \\(-5 \\cdot (-3) = 15\\)\nCombine like terms: \\(24x^2 - 18x - 20x + 15 = 24x^2 - 38x + 15\\)"
+                    },
+                    {
+                        "id": "mb14",
+                        "question": "Multiply \\((8x - 7)(5x + 1)\\)",
+                        "answer": "40x^2+8x-35x-7",
+                        "simplifiedAnswer": "40x^2-27x-7",
+                        "difficulty": 4,
+                        "explanation": "FOIL Method:\nFirst: \\(8x \\cdot 5x = 40x^2\\)\nOuter: \\(8x \\cdot 1 = 8x\\)\nInner: \\(-7 \\cdot 5x = -35x\\)\nLast: \\(-7 \\cdot 1 = -7\\)\nCombine like terms: \\(40x^2 + 8x - 35x - 7 = 40x^2 - 27x - 7\\)"
+                    },
+                    {
+                        "id": "mb15",
+                        "question": "Multiply \\((9x - 2)(6x + 5)\\)",
+                        "answer": "54x^2+45x-12x-10",
+                        "simplifiedAnswer": "54x^2+33x-10",
+                        "difficulty": 4,
+                        "explanation": "FOIL Method:\nFirst: \\(9x \\cdot 6x = 54x^2\\)\nOuter: \\(9x \\cdot 5 = 45x\\)\nInner: \\(-2 \\cdot 6x = -12x\\)\nLast: \\(-2 \\cdot 5 = -10\\)\nCombine like terms: \\(54x^2 + 45x - 12x - 10 = 54x^2 + 33x - 10\\)"
+                    },
+                    {
+                        "id": "mb16",
+                        "question": "Multiply \\((10x - 3)(4x - 7)\\)",
+                        "answer": "40x^2-70x-12x+21",
+                        "simplifiedAnswer": "40x^2-82x+21",
+                        "difficulty": 4,
+                        "explanation": "FOIL Method:\nFirst: \\(10x \\cdot 4x = 40x^2\\)\nOuter: \\(10x \\cdot (-7) = -70x\\)\nInner: \\(-3 \\cdot 4x = -12x\\)\nLast: \\(-3 \\cdot (-7) = 21\\)\nCombine like terms: \\(40x^2 - 70x - 12x + 21 = 40x^2 - 82x + 21\\)"
+                    },
+                    {
+                        "id": "mb17",
+                        "question": "Multiply \\((12x - 5)(3x + 4)\\)",
+                        "answer": "36x^2+48x-15x-20",
+                        "simplifiedAnswer": "36x^2+33x-20",
+                        "difficulty": 5,
+                        "explanation": "FOIL Method:\nFirst: \\(12x \\cdot 3x = 36x^2\\)\nOuter: \\(12x \\cdot 4 = 48x\\)\nInner: \\(-5 \\cdot 3x = -15x\\)\nLast: \\(-5 \\cdot 4 = -20\\)\nCombine like terms: \\(36x^2 + 48x - 15x - 20 = 36x^2 + 33x - 20\\)"
+                    },
+                    {
+                        "id": "mb18",
+                        "question": "Multiply \\((11x - 6)(5x - 2)\\)",
+                        "answer": "55x^2-22x-30x+12",
+                        "simplifiedAnswer": "55x^2-52x+12",
+                        "difficulty": 5,
+                        "explanation": "FOIL Method:\nFirst: \\(11x \\cdot 5x = 55x^2\\)\nOuter: \\(11x \\cdot (-2) = -22x\\)\nInner: \\(-6 \\cdot 5x = -30x\\)\nLast: \\(-6 \\cdot (-2) = 12\\)\nCombine like terms: \\(55x^2 - 22x - 30x + 12 = 55x^2 - 52x + 12\\)"
+                    }]
+            },
+            "factorPolynomials": {
+                "title": "Factor Polynomials",
+                "questions": [
+                    {
+                        "id": "fp1",
+                        "question": "Factor \\(2a^2 - 7ab + 3b^2\\)",
+                        "answer": "(2a-3b)(a-b)",
+                        "difficulty": 1,
+                        "explanation": "Look for factors where: First terms multiply to give \\(2a^2\\), last terms multiply to give \\(3b^2\\), and middle terms sum to \\(-7ab\\)"
+                    },
+                    {
+                        "id": "fp2",
+                        "question": "Factor \\(x^2 + 5x + 6\\)",
+                        "answer": "(x+2)(x+3)",
+                        "difficulty": 1,
+                        "explanation": "Find factors of 6 that add up to 5: 2 and 3"
+                    },
+                    {
+                        "id": "fp3",
+                        "question": "Factor \\(x^2 - 9\\)",
+                        "answer": "(x+3)(x-3)",
+                        "difficulty": 1,
+                        "explanation": "This is a difference of squares: \\(a^2 - b^2 = (a+b)(a-b)\\)"
+                    },
+                    {
+                        "id": "fp4",
+                        "question": "Factor \\(2x^2 + 7x + 3\\)",
+                        "answer": "(2x+3)(x+1)",
+                        "difficulty": 2,
+                        "explanation": "Find factors where: First terms multiply to give \\(2x^2\\), last terms multiply to give 3, and middle terms sum to \\(7x\\)"
+                    },
+                    {
+                        "id": "fp5",
+                        "question": "Factor \\(x^2 - 6x + 9\\)",
+                        "answer": "(x-3)(x-3)",
+                        "difficulty": 2,
+                        "explanation": "This is a perfect square trinomial: \\((x-3)^2\\)"
+                    },
+                    {
+                        "id": "fp6",
+                        "question": "Factor \\(3x^2 + 10x + 3\\)",
+                        "answer": "(3x+1)(x+3)",
+                        "difficulty": 2,
+                        "explanation": "Find factors where product of first terms is \\(3x^2\\), product of last terms is 3, sum of middle terms is \\(10x\\)"
+                    },
+                    {
+                        "id": "fp7",
+                        "question": "Factor \\(x^2 - 8x + 15\\)",
+                        "answer": "(x-3)(x-5)",
+                        "difficulty": 2,
+                        "explanation": "Find factors of 15 that add up to -8: -3 and -5"
+                    },
+                    {
+                        "id": "fp8",
+                        "question": "Factor \\(4x^2 - 9\\)",
+                        "answer": "(2x+3)(2x-3)",
+                        "difficulty": 2,
+                        "explanation": "This is a difference of squares: \\((2x)^2 - 3^2\\)"
+                    },
+                    {
+                        "id": "fp9",
+                        "question": "Factor \\(6x^2 + 13x + 6\\)",
+                        "answer": "(2x+3)(3x+2)",
+                        "difficulty": 3,
+                        "explanation": "Find factors where product is \\(6x^2\\) and 6, sum of middle terms is \\(13x\\)"
+                    },
+                    {
+                        "id": "fp10",
+                        "question": "Factor \\(x^2 + 2x - 15\\)",
+                        "answer": "(x+5)(x-3)",
+                        "difficulty": 3,
+                        "explanation": "Find factors of -15 that add up to 2: 5 and -3"
+                    },
+                    {
+                        "id": "fp11",
+                        "question": "Factor \\(2x^2 - 9y^2\\)",
+                        "answer": "(2x+3y)(x-3y)",
+                        "difficulty": 3,
+                        "explanation": "This is a difference of squares with a GCF: \\(2(x^2-\frac{9}{2}y^2)\\)"
+                    },
+                    {
+                        "id": "fp12",
+                        "question": "Factor \\(x^2 + 6xy + 9y^2\\)",
+                        "answer": "(x+3y)(x+3y)",
+                        "difficulty": 3,
+                        "explanation": "This is a perfect square trinomial: \\((x+3y)^2\\)"
+                    },
+                    {
+                        "id": "fp13",
+                        "question": "Factor \\(3x^2 - 14x + 15\\)",
+                        "answer": "(3x-5)(x-3)",
+                        "difficulty": 4,
+                        "explanation": "Find factors where product of first terms is \\(3x^2\\), product of last terms is 15, sum of middle terms is \\(-14x\\)"
+                    },
+                    {
+                        "id": "fp14",
+                        "question": "Factor \\(4x^2 + 12xy + 9y^2\\)",
+                        "answer": "(2x+3y)(2x+3y)",
+                        "difficulty": 4,
+                        "explanation": "This is a perfect square trinomial: \\((2x+3y)^2\\)"
+                    },
+                    {
+                        "id": "fp15",
+                        "question": "Factor \\(6x^2 - x - 2\\)",
+                        "answer": "(3x+2)(2x-1)",
+                        "difficulty": 4,
+                        "explanation": "Find factors where product of first terms is \\(6x^2\\), product of last terms is -2, sum of middle terms is \\(-x\\)"
+                    },
+                    {
+                        "id": "fp16",
+                        "question": "Factor \\(x^4 - y^4\\)",
+                        "answer": "(x^2+y^2)(x+y)(x-y)",
+                        "difficulty": 5,
+                        "explanation": "This is a difference of squares twice: \\(x^4-y^4=(x^2+y^2)(x^2-y^2)=(x^2+y^2)(x+y)(x-y)\\)"
+                    },
+                    {
+                        "id": "fp17",
+                        "question": "Factor \\(2x^2 + 5x - 12\\)",
+                        "answer": "(2x-3)(x+4)",
+                        "difficulty": 5,
+                        "explanation": "Find factors where product of first terms is \\(2x^2\\), product of last terms is -12, sum of middle terms is \\(5x\\)"
+                    },
+                    {
+                        "id": "fp18",
+                        "question": "Factor \\(3x^3 + 3x^2 - 18x - 18\\)",
+                        "answer": "3(x+1)(x+3)(x-2)",
+                        "difficulty": 5,
+                        "explanation": "First factor out GCF of 3, then find factors of the resulting cubic expression"
+                    },
+                    {
+                        "id": "fp19",
+                        "question": "Factor \\(x^3 + x^2y - xy^2 - y^3\\)",
+                        "answer": "(x+y)(x^2-y^2)",
+                        "difficulty": 5,
+                        "explanation": "Group terms: \\(x^2(x+y) - y^2(x+y)=(x+y)(x^2-y^2)\\)"
+                    },
+                    {
+                        "id": "fp20",
+                        "question": "Factor \\(4x^2 - 12x + 9\\)",
+                        "answer": "(2x-3)(2x-3)",
+                        "difficulty": 5,
+                        "explanation": "This is a perfect square trinomial: \\((2x-3)^2\\)"
+                    }
+                ]
+            }
+        };
+
+        // Global state
+        let currentSection = null;
+        let currentQuestionId = null;
+        let questionStats = {};
+        let activeQuestionBank = [];
+        let difficultyRange = { min: 1, max: 5 };
+        let stats = {
+            correct: 0,
+            skipped: 0,
+            total: 0,
+            answered: 0
+        };
+
+
+
+        function normalizePolynomial(poly) {
+            // Remove all spaces
+            poly = poly.replace(/\s+/g, '');
+
+            // Convert negative signs
+            poly = poly.replace(/–/g, '-');
+
+            // Convert to standard form if needed
+            // This could be expanded based on your requirements
+            return poly.toLowerCase();
+        }
+
+        //         // Handle answer submission
+        function checkAnswer() {
+            const input = document.querySelector('.answer-input');
+            const feedback = document.querySelector('.feedback');
+            const submitButton = document.querySelector('.submit-btn');
+            const buttonGroup = document.querySelector('.button-group');
+
+            if (submitButton.disabled) return;
+
+            const currentQuestion = activeQuestionBank.find(q => q.id === currentQuestionId);
+            if (!currentQuestion) return;
+
+            let normalizedInput = normalizePolynomial(input.value);
+            let normalizedAnswer = normalizePolynomial(currentQuestion.answer);
+
+            const isCorrect = normalizedInput === normalizedAnswer;
+
+            if (!questionStats[currentQuestion.id]) {
+                questionStats[currentQuestion.id] = {
+                    correct: 0,
+                    incorrect: 0,
+                    difficulty: currentQuestion.difficulty || 1
+                };
+            }
+
+            if (isCorrect) {
+                questionStats[currentQuestion.id].correct++;
+                stats.correct++;
+                feedback.innerHTML = `Correct! ${currentQuestion.explanation}`;
+                feedback.className = 'feedback correct';
+            } else {
+                questionStats[currentQuestion.id].incorrect++;
+                feedback.innerHTML = `Incorrect. The answer is ${currentQuestion.answer}. ${currentQuestion.explanation}`;
+                feedback.className = 'feedback incorrect';
+            }
+
+            questionStats[currentQuestion.id].lastAnswered = new Date();
+            stats.answered++;
+            updateStats();
+            feedback.style.display = 'block';
+
+            input.disabled = true;
+            submitButton.disabled = true;
+
+            const nextButton = document.createElement('button');
+            nextButton.textContent = 'Next Question';
+            nextButton.className = 'next-btn';
+            nextButton.addEventListener('click', showNextQuestion);
+            buttonGroup.appendChild(nextButton);
+
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+        }
+
+
+
+        // Show next question
+        function showNextQuestion() {
+            const question = getRandomQuestion();
+            if (!question) {
+                showTestComplete();
+                return;
+            }
+
+            currentQuestionId = question.id;
+            currentSection = question.sectionId;
+
+            // Get the container
+            const container = document.getElementById('question-display');
+
+            // Clear the existing content
+            container.innerHTML = '';
+
+            // Show the container
+            container.style.display = 'block';
+
+            let placeholder = "Type your answer";
+            let hint = "";
+            if (question.notation === "radical") {
+                hint = "Use √ for square root, ∛ for cube root";
+                placeholder = "Example: 2√3 or 5∛2";
+            } else if (question.notation === "exponent") {
+                hint = "Use ^ for exponents";
+                placeholder = "Example: 2^(1/2) or 3^(1/3)";
+            }
+
+            // Create new elements instead of using innerHTML
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+
+            const questionText = document.createElement('p');
+            questionText.innerHTML = question.question;
+
+            const hintText = document.createElement('p');
+            hintText.className = 'hint';
+            hintText.style.fontSize = '0.9em';
+            hintText.style.color = '#666';
+            hintText.textContent = hint;
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'answer-input';
+            input.placeholder = placeholder;
+
+            const feedback = document.createElement('div');
+            feedback.className = 'feedback';
+
+            const buttonGroup = document.createElement('div');
+            buttonGroup.className = 'button-group';
+
+            const submitBtn = document.createElement('button');
+            submitBtn.className = 'submit-btn';
+            submitBtn.textContent = 'Submit';
+
+            const skipBtn = document.createElement('button');
+            skipBtn.className = 'skip-btn';
+            skipBtn.textContent = 'Skip';
+
+            // Append elements
+            buttonGroup.appendChild(submitBtn);
+            buttonGroup.appendChild(skipBtn);
+
+            questionDiv.appendChild(questionText);
+            questionDiv.appendChild(hintText);
+            questionDiv.appendChild(input);
+            questionDiv.appendChild(feedback);
+            questionDiv.appendChild(buttonGroup);
+
+            container.appendChild(questionDiv);
+
+            // Create function reference for checking answer
+            const submitHandler = () => {
+                // Get elements from within their scope
+                const currentInput = input;
+                const currentFeedback = feedback;
+                const currentSubmitBtn = submitBtn;
+                const currentButtonGroup = buttonGroup;
+
+                // Prevent multiple submissions
+                if (currentSubmitBtn.disabled) {
+                    return;
+                }
+
+                const currentQuestion = activeQuestionBank.find(q => q.id === currentQuestionId);
+                if (!currentQuestion) return;
+
+                let normalizedInput = currentInput.value.trim();
+                let normalizedAnswer = currentQuestion.answer;
+
+                if (currentQuestion.notation) {
+                    normalizedInput = normalizeAnswer(currentInput.value);
+                    normalizedAnswer = normalizeAnswer(currentQuestion.answer);
+                } else {
+                    normalizedInput = currentInput.value.toLowerCase().replace(/\s/g, '');
+                    normalizedAnswer = currentQuestion.answer.toLowerCase().replace(/\s/g, '');
+                }
+
+                const isCorrect = normalizedInput === normalizedAnswer;
+
+                if (!questionStats[currentQuestion.id]) {
+                    questionStats[currentQuestion.id] = {
+                        correct: 0,
+                        incorrect: 0,
+                        difficulty: currentQuestion.difficulty || 1
+                    };
+                }
+
+                if (isCorrect) {
+                    questionStats[currentQuestion.id].correct++;
+                    stats.correct++;
+                    currentFeedback.innerHTML = `Correct! ${currentQuestion.explanation}`;
+                    currentFeedback.className = 'feedback correct';
+                } else {
+                    questionStats[currentQuestion.id].incorrect++;
+                    currentFeedback.innerHTML = `Incorrect. The answer is ${currentQuestion.answer}. ${currentQuestion.explanation}`;
+                    currentFeedback.className = 'feedback incorrect';
+                }
+
+                questionStats[currentQuestion.id].lastAnswered = new Date();
+                stats.answered++;
+                updateStats();
+                currentFeedback.style.display = 'block';
+
+                // Disable input and submit button
+                currentInput.disabled = true;
+                currentSubmitBtn.disabled = true;
+
+                // Create and add next button
+                const nextButton = document.createElement('button');
+                nextButton.textContent = 'Next Question';
+                nextButton.className = 'next-btn';
+                nextButton.addEventListener('click', showNextQuestion);
+                currentButtonGroup.appendChild(nextButton);
+
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+            };
+
+            // Add event handlers with the submit handler function
+            const handleKeyPress = (e) => {
+                if (e.key === 'Enter' && !submitBtn.disabled) {
+                    submitHandler();
+                }
+            };
+
+            input.addEventListener('keypress', handleKeyPress);
+            submitBtn.addEventListener('click', submitHandler);
+            skipBtn.addEventListener('click', skipQuestion);
+
+            // Set focus to input
+            input.focus();
+            updateStats();
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+        }
+        // Update closeAllSections (simplified since we only have one container):
+        function closeAllSections() {
+            const container = document.getElementById('question-display');
+            container.innerHTML = '';
+        }
+
+        // Update showTestComplete:
+        function showTestComplete() {
+            const container = document.getElementById('test-container');
+            const sectionStats = Object.entries(testData).map(([sectionId, sectionData]) => {
+                const sectionQuestions = sectionData.questions.length;
+                const correctAnswers = sectionData.questions.filter(q =>
+                    questionStats[q.id]?.correct > 0
+                ).length;
+                return `<li>${sectionData.title}: ${correctAnswers}/${sectionQuestions} completed</li>`;
+            }).join('');
+
+            container.innerHTML = `
+        <div class="section">
+            <h2>Section Progress</h2>
+            <ul>${sectionStats}</ul>
+            <p>Total correct: ${stats.correct}</p>
+            <p>Total skipped: ${stats.skipped}</p>
+            <button onclick="location.reload()">Restart Assessment</button>
+        </div>
+    `;
+        }
+
+
+        function createSectionNav() {
+            const navContainer = document.createElement('div');
+            navContainer.className = 'section';
+            navContainer.innerHTML = `
+                <h3>Section Navigation</h3>
+                <div class="section-nav" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    ${Object.entries(testData).map(([sectionId, sectionData]) => `
+                        <button class="section-btn" data-section="${sectionId}">
+                            ${sectionData.title}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+
+            // Add styles for section navigation
+            const style = document.createElement('style');
+            style.textContent = `
+                .section-btn {
+                    background-color: #2196F3;
+                    color: white;
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                }
+                .section-btn:hover {
+                    background-color: #1976D2;
+                }
+                .section-btn.active {
+                    background-color: #1565C0;
+                }
+            `;
+            document.head.appendChild(style);
+
+            document.body.insertBefore(navContainer, document.getElementById('test-container'));
+
+            // Add click handlers for section buttons
+            document.querySelectorAll('.section-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    selectSection(btn.dataset.section);
+                });
+            });
+        }
+
+        // Add function to select and show section
+        function selectSection(sectionId) {
+            currentSection = sectionId;
+
+            // Update active button state
+            document.querySelectorAll('.section-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.section === sectionId);
+            });
+
+            // Filter questions for this section
+            activeQuestionBank = Object.entries(testData)
+                .filter(([id, _]) => id === sectionId)
+                .flatMap(([sectionId, sectionData]) =>
+                    sectionData.questions
+                        .filter(q => {
+                            const difficulty = q.difficulty || 1;
+                            return difficulty >= difficultyRange.min && difficulty <= difficultyRange.max;
+                        })
+                        .map(q => ({ ...q, sectionId }))
+                );
+
+            // Update stats before showing next question
+            updateStats();
+            showNextQuestion();
+        }
+
+        // Modify getRandomQuestion to work with current section
+        function getRandomQuestion() {
+            if (activeQuestionBank.length === 0) return null;
+
+            // Filter questions from current section that haven't been answered correctly
+            const availableQuestions = activeQuestionBank.filter(question =>
+                !questionStats[question.id]?.lastAnswered ||
+                questionStats[question.id]?.incorrect > 0
+            );
+
+            if (availableQuestions.length === 0) {
+                return null; // All questions in section answered correctly
+            }
+
+            const randomIndex = Math.floor(Math.random() * availableQuestions.length);
+            return availableQuestions[randomIndex];
+        }
+
+        // Initialize question stats
+        function initializeQuestionStats() {
+            // Try to load from localStorage first
+            const savedStats = localStorage.getItem('questionStats');
+            if (savedStats) {
+                questionStats = JSON.parse(savedStats);
+            } else {
+                Object.entries(testData).forEach(([sectionId, sectionData]) => {
+                    sectionData.questions.forEach(question => {
+                        if (!questionStats[question.id]) {
+                            questionStats[question.id] = {
+                                correct: 0,
+                                incorrect: 0,
+                                lastAnswered: null,
+                                difficulty: question.difficulty || 1
+                            };
+                        }
+                    });
+                });
+            }
+        }
+
+        // Update stats display
+        function updateStats() {
+            // Calculate total questions in current section
+            const totalQuestions = activeQuestionBank.length;
+
+            // Calculate progress based on current section's answered questions
+            const answeredInSection = Object.entries(questionStats)
+                .filter(([id]) => activeQuestionBank.find(q => q.id === id))
+                .filter(([_, stats]) => stats.correct > 0)
+                .length;
+
+            const progress = totalQuestions > 0 ? (answeredInSection / totalQuestions * 100) : 0;
+
+            // Update display
+            document.getElementById('progress-stat').textContent = `${Math.round(progress)}%`;
+            document.getElementById('correct-stat').textContent = `${stats.correct}/${stats.answered}`;
+            document.getElementById('skipped-stat').textContent = stats.skipped;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+
+            // Save stats to localStorage
+            localStorage.setItem('questionStats', JSON.stringify(questionStats));
+        }
+
+        // Filter questions by difficulty
+        function filterQuestionsByDifficulty() {
+            if (difficultyRange.min > difficultyRange.max) {
+                [difficultyRange.min, difficultyRange.max] = [difficultyRange.max, difficultyRange.min];
+            }
+
+            activeQuestionBank = [];
+            Object.entries(testData).forEach(([sectionId, sectionData]) => {
+                sectionData.questions.forEach(question => {
+                    const difficulty = question.difficulty || 1;
+                    if (difficulty >= difficultyRange.min && difficulty <= difficultyRange.max) {
+                        activeQuestionBank.push({
+                            ...question,
+                            sectionId
+                        });
+                    }
+                });
+            });
+        }
+
+
+
+
+        // Generate performance report
+        function generateReport() {
+            const reportContainer = document.createElement('div');
+            reportContainer.className = 'section';
+            reportContainer.innerHTML = `
+                <h2>Question Performance Report</h2>
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Question ID</th>
+                            <th>Difficulty</th>
+                            <th>Correct</th>
+                            <th>Incorrect</th>
+                            <th>Success Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${Object.entries(questionStats)
+                    .map(([id, stats]) => {
+                        const total = stats.correct + stats.incorrect;
+                        const rate = total > 0 ? ((stats.correct / total) * 100).toFixed(1) : 0;
+                        return `
+                                    <tr>
+                                        <td>${id}</td>
+                                        <td>${stats.difficulty || 1}</td>
+                                        <td>${stats.correct}</td>
+                                        <td>${stats.incorrect}</td>
+                                        <td>${rate}%</td>
+                                    </tr>
+                                    `;
+                    }).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('test-container').appendChild(reportContainer);
+        }
+
+        // Add difficulty filter UI
+        function addDifficultyFilter() {
+            const filterContainer = document.createElement('div');
+            filterContainer.className = 'section';
+            filterContainer.innerHTML = `
+                <h3>Difficulty Filter</h3>
+                <div class="filter-controls">
+                    <label>Min: <input type="number" id="min-difficulty" value="1" min="1" max="5"></label>
+                    <label>Max: <input type="number" id="max-difficulty" value="5" min="1" max="5"></label>
+                    <button id="apply-filter">Apply Filter</button>
+                </div>
+            `;
+
+            document.body.insertBefore(filterContainer, document.getElementById('test-container'));
+
+            document.getElementById('apply-filter').addEventListener('click', () => {
+                const minVal = parseInt(document.getElementById('min-difficulty').value);
+                const maxVal = parseInt(document.getElementById('max-difficulty').value);
+                difficultyRange.min = Math.min(minVal, maxVal);
+                difficultyRange.max = Math.max(minVal, maxVal);
+                filterQuestionsByDifficulty();
+                showNextQuestion();
+            });
+        }
+
+        // Normalize answer for comparison
+        function normalizeAnswer(answer) {
+            let normalized = answer.toLowerCase().replace(/\s/g, '');
+            normalized = normalized.replace(/√/g, 'sqrt');
+            normalized = normalized.replace(/∛/g, 'cbrt');
+            normalized = normalized.replace(/\^?\(?1\/2\)?/g, '^(1/2)');
+            normalized = normalized.replace(/\^?\(?1\/3\)?/g, '^(1/3)');
+            return normalized;
+        }
+
+        // Handle skipping questions
+        function skipQuestion() {
+            stats.skipped++;
+            showNextQuestion();
+            updateStats();
+        }
+
+        // Initialize the test
+        window.onload = function () {
+            // Initialize features
+            initializeQuestionStats();
+            addDifficultyFilter();
+
+            // Add report button
+            const reportBtn = document.createElement('button');
+            reportBtn.textContent = 'Generate Report';
+            reportBtn.className = 'submit-btn';
+            reportBtn.style.marginTop = '20px';
+            reportBtn.addEventListener('click', generateReport);
+            document.body.insertBefore(reportBtn, document.getElementById('test-container'));
+
+            // Create section navigation
+            createSectionNav();
+
+            // Create single question container
+            const container = document.getElementById('test-container');
+            container.innerHTML = '<div id="question-display" class="question-container"></div>';
+
+            // Calculate total questions
+            stats.total = Object.values(testData).reduce((acc, section) =>
+                acc + section.questions.length, 0);
+
+            // Initialize with first section
+            selectSection(Object.keys(testData)[0]);
+
+            // Add error handling for MathJax
+            MathJax.Hub.Register.MessageHook("Math Processing Error", function (message) {
+                console.error("MathJax Error:", message);
+            });
+        };
+    </script>
+</body>
+
+</html>

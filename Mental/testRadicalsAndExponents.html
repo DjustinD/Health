@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Assessment: Radicals and Exponents</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .section {
+            background-color: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-container {
+            margin: 15px 0;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .skip-btn {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        .next-btn {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .progress {
+            background-color: #ddd;
+            height: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background-color: #4CAF50;
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .correct {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+
+        .incorrect {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+
+        .section-title {
+            color: #2196F3;
+            margin-bottom: 15px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .filter-controls input {
+            width: 60px;
+            padding: 5px;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .report-table th,
+        .report-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .report-table th {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Math Assessment: Radicals and Exponents</h1>
+
+    <div class="stats">
+        <div class="stat-box">
+            <h3>Progress</h3>
+            <p id="progress-stat">0%</p>
+        </div>
+        <div class="stat-box">
+            <h3>Correct</h3>
+            <p id="correct-stat">0</p>
+        </div>
+        <div class="stat-box">
+            <h3>Skipped</h3>
+            <p id="skipped-stat">0</p>
+        </div>
+    </div>
+
+    <div class="progress">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <div id="test-container"></div>
+
+    <script>
+        // Test data in JSON format
+        const testData = {
+            "simplifyRadicals": {
+                "title": "Simplify Radicals",
+                "questions": [
+                    {
+                        "id": "sr1",
+                        "question": "Simplify \\(\\sqrt{72}\\)",
+                        "answer": "6√2",
+                        "notation": "radical",
+                        "difficulty": 1,
+                        "explanation": "72 = 36 × 2 = (6^2) × 2, so \\(\\sqrt{72} = 6\\sqrt{2}\\)"
+                    },
+                    {
+                        "id": "sr2",
+                        "question": "Simplify \\(72^{\\frac{1}{2}}\\)",
+                        "answer": "6 x 2^(1/2)",
+                        "notation": "exponent",
+                        "difficulty": 1,
+                        "explanation": "\\(72^{\\frac{1}{2}} = (36 \\times 2)^{\\frac{1}{2}} = 36^{\\frac{1}{2}} \\times 2^{\\frac{1}{2}} = 6 \\times 2^{\\frac{1}{2}}\\)"
+                    },
+                    {
+                        "id": "sr3",
+                        "question": "Simplify \\(\\sqrt[3]{125}\\)",
+                        "answer": "5",
+                        "notation": "radical",
+                        "difficulty": 1,
+                        "explanation": "\\(\\sqrt[3]{125} = \\sqrt[3]{5^3} = 5\\)"
+                    },
+                    {
+                        "id": "sr4",
+                        "question": "Simplify \\(125^{\\frac{1}{3}}\\)",
+                        "answer": "5",
+                        "notation": "exponent",
+                        "difficulty": 1,
+                        "explanation": "\\(125^{\\frac{1}{3}} = (5^3)^{\\frac{1}{3}} = 5\\)"
+                    },
+                    {
+                        "id": "sr5",
+                        "question": "Simplify \\(\\sqrt{50}\\)",
+                        "answer": "5√2",
+                        "notation": "radical",
+                        "difficulty": 1,
+                        "explanation": "50 = 25 × 2 = (5^2) × 2, so \\(\\sqrt{50} = 5\\sqrt{2}\\)"
+                    },
+                    {
+                        "id": "sr6",
+                        "question": "Simplify \\(\\sqrt{128}\\)",
+                        "answer": "8√2",
+                        "notation": "radical",
+                        "difficulty": 2,
+                        "explanation": "128 = 64 × 2 = (8^2) × 2, so \\(\\sqrt{128} = 8\\sqrt{2}\\)"
+                    },
+                    {
+                        "id": "sr7",
+                        "question": "Simplify \\(\\sqrt{200}\\)",
+                        "answer": "10√2",
+                        "notation": "radical",
+                        "difficulty": 2,
+                        "explanation": "200 = 100 × 2 = (10^2) × 2, so \\(\\sqrt{200} = 10\\sqrt{2}\\)"
+                    },
+                    {
+                        "id": "sr8",
+                        "question": "Simplify \\(\\sqrt{98}\\)",
+                        "answer": "7√2",
+                        "notation": "radical",
+                        "difficulty": 2,
+                        "explanation": "98 = 49 × 2 = (7^2) × 2, so \\(\\sqrt{98} = 7\\sqrt{2}\\)"
+                    },
+                    {
+                        "id": "sr9",
+                        "question": "Simplify \\(\\sqrt{108}\\)",
+                        "answer": "6√3",
+                        "notation": "radical",
+                        "difficulty": 2,
+                        "explanation": "108 = 36 × 3 = (6^2) × 3, so \\(\\sqrt{108} = 6\\sqrt{3}\\)"
+                    },
+                    {
+                        "id": "sr10",
+                        "question": "Simplify \\(\\sqrt[3]{1000}\\)",
+                        "answer": "10",
+                        "notation": "radical",
+                        "difficulty": 2,
+                        "explanation": "\\(\\sqrt[3]{1000} = \\sqrt[3]{10^3} = 10\\)"
+                    },
+                    {
+                        "id": "sr11",
+                        "question": "Simplify \\(\\sqrt{288}\\)",
+                        "answer": "12√2",
+                        "notation": "radical",
+                        "difficulty": 3,
+                        "explanation": "288 = 144 × 2 = (12^2) × 2, so \\(\\sqrt{288} = 12\\sqrt{2}\\)"
+                    },
+                    {
+                        "id": "sr12",
+                        "question": "Simplify \\(\\sqrt{242}\\)",
+                        "answer": "11√2",
+                        "notation": "radical",
+                        "difficulty": 3,
+                        "explanation": "242 = 121 × 2 = (11^2) × 2, so \\(\\sqrt{242} = 11\\sqrt{2}\\)"
+                    },
+                    {
+                        "id": "sr13",
+                        "question": "Simplify \\(\\sqrt{300}\\)",
+                        "answer": "10√3",
+                        "notation": "radical",
+                        "difficulty": 3,
+                        "explanation": "300 = 100 × 3 = (10^2) × 3, so \\(\\sqrt{300} = 10\\sqrt{3}\\)"
+                    },
+                    {
+                        "id": "sr14",
+                        "question": "Simplify \\(\\sqrt{500}\\)",
+                        "answer": "10√5",
+                        "notation": "radical",
+                        "difficulty": 3,
+                        "explanation": "500 = 100 × 5 = (10^2) × 5, so \\(\\sqrt{500} = 10\\sqrt{5}\\)"
+                    },
+                    {
+                        "id": "sr15",
+                        "question": "Simplify \\(\\sqrt[3]{3375}\\)",
+                        "answer": "15",
+                        "notation": "radical",
+                        "difficulty": 3,
+                        "explanation": "\\(\\sqrt[3]{3375} = \\sqrt[3]{15^3} = 15\\)"
+                    },
+                    {
+                        "id": "sr16",
+                        "question": "Simplify \\(\\sqrt{1800}\\)",
+                        "answer": "30√2",
+                        "notation": "radical",
+                        "difficulty": 4,
+                        "explanation": "1800 = 900 × 2 = (30^2) × 2, so \\(\\sqrt{1800} = 30\\sqrt{2}\\)"
+                    },
+                    {
+                        "id": "sr17",
+                        "question": "Simplify \\(\\sqrt{1323}\\)",
+                        "answer": "21√3",
+                        "notation": "radical",
+                        "difficulty": 4,
+                        "explanation": "1323 = 441 × 3 = (21^2) × 3, so \\(\\sqrt{1323} = 21\\sqrt{3}\\)"
+                    },
+                    {
+                        "id": "sr18",
+                        "question": "Simplify \\(\\sqrt{2700}\\)",
+                        "answer": "30√3",
+                        "notation": "radical",
+                        "difficulty": 4,
+                        "explanation": "2700 = 900 × 3 = (30^2) × 3, so \\(\\sqrt{2700} = 30\\sqrt{3}\\)"
+                    },
+                    {
+                        "id": "sr19",
+                        "question": "Simplify \\(\\sqrt{4500}\\)",
+                        "answer": "30√5",
+                        "notation": "radical",
+                        "difficulty": 5,
+                        "explanation": "4500 = 900 × 5 = (30^2) × 5, so \\(\\sqrt{4500} = 30\\sqrt{5}\\)"
+                    },
+                    {
+                        "id": "sr20",
+                        "question": "Simplify \\(\\sqrt[3]{27000}\\)",
+                        "answer": "30",
+                        "notation": "radical",
+                        "difficulty": 5,
+                        "explanation": "\\(\\sqrt[3]{27000} = \\sqrt[3]{30^3} = 30\\)"
+                    },
+                    {
+                        "id": "sr21",
+                        "question": "Simplify \\(\\sqrt{6075}\\)",
+                        "answer": "55√2",
+                        "notation": "radical",
+                        "difficulty": 5,
+                        "explanation": "6075 = 3025 × 2 = (55^2) × 2, so \\(\\sqrt{6075} = 55\\sqrt{2}\\)"
+                    },
+                    {
+                        "id": "sr22",
+                        "question": "Simplify \\(\\sqrt{7203}\\)",
+                        "answer": "49√3",
+                        "notation": "radical",
+                        "difficulty": 5,
+                        "explanation": "7203 = 2401 × 3 = (49^2) × 3, so \\(\\sqrt{7203} = 49\\sqrt{3}\\)"
+                    },
+                    {
+                        "id": "sr23",
+                        "question": "Simplify \\(\\sqrt{8000}\\)",
+                        "answer": "40√5",
+                        "notation": "radical",
+                        "difficulty": 5,
+                        "explanation": "8000 = 1600 × 5 = (40^2) × 5, so \\(\\sqrt{8000} = 40\\sqrt{5}\\)"
+                    },
+                    {
+                        "id": "sr24",
+                        "question": "Simplify \\(\\sqrt[3]{125000}\\)",
+                        "answer": "50",
+                        "notation": "radical",
+                        "difficulty": 5,
+                        "explanation": "\\(\\sqrt[3]{125000} = \\sqrt[3]{50^3} = 50\\)"
+                    }
+                ]
+            },
+            "simplifyExponents": {
+                "title": "Simplify Exponents",
+                "questions": [
+                    {
+                        "id": "se1",
+                        "question": "Simplify \\(2^3 \\times 2^4\\)",
+                        "answer": "128",
+                        "difficulty": 1,
+                        "explanation": "\\(2^3 \\times 2^4 = 2^7 = 128\\)"
+                    },
+                    {
+                        "id": "se2",
+                        "question": "Simplify \\(3^2 \\times 3^3\\)",
+                        "answer": "243",
+                        "difficulty": 1,
+                        "explanation": "\\(3^2 \\times 3^3 = 3^5 = 243\\)"
+                    },
+                    {
+                        "id": "se3",
+                        "question": "Simplify \\(2^4 \\times 2^2\\)",
+                        "answer": "64",
+                        "difficulty": 1,
+                        "explanation": "\\(2^4 \\times 2^2 = 2^6 = 64\\)"
+                    },
+                    {
+                        "id": "se4",
+                        "question": "Simplify \\(5^2 \\times 5^1\\)",
+                        "answer": "125",
+                        "difficulty": 1,
+                        "explanation": "\\(5^2 \\times 5^1 = 5^3 = 125\\)"
+                    },
+                    {
+                        "id": "se5",
+                        "question": "Simplify \\(2^5 \\div 2^2\\)",
+                        "answer": "8",
+                        "difficulty": 2,
+                        "explanation": "\\(2^5 \\div 2^2 = 2^{5-2} = 2^3 = 8\\)"
+                    },
+                    {
+                        "id": "se6",
+                        "question": "Simplify \\(4^3 \\div 4^1\\)",
+                        "answer": "16",
+                        "difficulty": 2,
+                        "explanation": "\\(4^3 \\div 4^1 = 4^{3-1} = 4^2 = 16\\)"
+                    },
+                    {
+                        "id": "se7",
+                        "question": "Simplify \\((2^3)^2\\)",
+                        "answer": "64",
+                        "difficulty": 2,
+                        "explanation": "\\((2^3)^2 = 2^{3 \\times 2} = 2^6 = 64\\)"
+                    },
+                    {
+                        "id": "se8",
+                        "question": "Simplify \\((3^2)^3\\)",
+                        "answer": "729",
+                        "difficulty": 2,
+                        "explanation": "\\((3^2)^3 = 3^{2 \\times 3} = 3^6 = 729\\)"
+                    },
+                    {
+                        "id": "se9",
+                        "question": "Simplify \\(2^4 \\times 3^2\\)",
+                        "answer": "144",
+                        "difficulty": 3,
+                        "explanation": "\\(2^4 \\times 3^2 = 16 \\times 9 = 144\\)"
+                    },
+                    {
+                        "id": "se10",
+                        "question": "Simplify \\(2^3 \\times 5^2\\)",
+                        "answer": "200",
+                        "difficulty": 3,
+                        "explanation": "\\(2^3 \\times 5^2 = 8 \\times 25 = 200\\)"
+                    },
+                    {
+                        "id": "se11",
+                        "question": "Simplify \\((2^2 \\times 3)^2\\)",
+                        "answer": "144",
+                        "difficulty": 3,
+                        "explanation": "\\((2^2 \\times 3)^2 = (4 \\times 3)^2 = 12^2 = 144\\)"
+                    },
+                    {
+                        "id": "se12",
+                        "question": "Simplify \\(2^6 \\div 2^2 \\times 3^2\\)",
+                        "answer": "144",
+                        "difficulty": 3,
+                        "explanation": "\\(2^6 \\div 2^2 \\times 3^2 = 2^4 \\times 3^2 = 16 \\times 9 = 144\\)"
+                    },
+                    {
+                        "id": "se13",
+                        "question": "Simplify \\((2 \\times 3)^3\\)",
+                        "answer": "216",
+                        "difficulty": 4,
+                        "explanation": "\\((2 \\times 3)^3 = 6^3 = 216\\)"
+                    },
+                    {
+                        "id": "se14",
+                        "question": "Simplify \\((2^2 \\times 5)^2\\)",
+                        "answer": "400",
+                        "difficulty": 4,
+                        "explanation": "\\((2^2 \\times 5)^2 = (4 \\times 5)^2 = 20^2 = 400\\)"
+                    },
+                    {
+                        "id": "se15",
+                        "question": "Simplify \\(2^4 \\times 3^2 \\times 5\\)",
+                        "answer": "720",
+                        "difficulty": 4,
+                        "explanation": "\\(2^4 \\times 3^2 \\times 5 = 16 \\times 9 \\times 5 = 720\\)"
+                    },
+                    {
+                        "id": "se16",
+                        "question": "Simplify \\(2^5 \\times 3^3 \\div 2^2\\)",
+                        "answer": "216",
+                        "difficulty": 4,
+                        "explanation": "\\(2^5 \\times 3^3 \\div 2^2 = 2^3 \\times 3^3 = 8 \\times 27 = 216\\)"
+                    },
+                    {
+                        "id": "se17",
+                        "question": "Simplify \\((2^3 \\times 3^2)^2\\)",
+                        "answer": "5184",
+                        "difficulty": 5,
+                        "explanation": "\\((2^3 \\times 3^2)^2 = (8 \\times 9)^2 = 72^2 = 5184\\)"
+                    },
+                    {
+                        "id": "se18",
+                        "question": "Simplify \\(2^6 \\times 3^3 \\times 5^2\\)",
+                        "answer": "18000",
+                        "difficulty": 5,
+                        "explanation": "\\(2^6 \\times 3^3 \\times 5^2 = 64 \\times 27 \\times 25 = 18000\\)"
+                    },
+                    {
+                        "id": "se19",
+                        "question": "Simplify \\((2^2 \\times 3 \\times 5)^2\\)",
+                        "answer": "3600",
+                        "difficulty": 5,
+                        "explanation": "\\((2^2 \\times 3 \\times 5)^2 = (4 \\times 3 \\times 5)^2 = 60^2 = 3600\\)"
+                    },
+                    {
+                        "id": "se20",
+                        "question": "Simplify \\(2^4 \\times 3^4 \\div 2^2 \\times 5^2\\)",
+                        "answer": "32400",
+                        "difficulty": 5,
+                        "explanation": "\\(2^4 \\times 3^4 \\div 2^2 \\times 5^2 = 2^2 \\times 3^4 \\times 5^2 = 4 \\times 81 \\times 25 = 32400\\)"
+                    },
+                    {
+                        "id": "se21",
+                        "question": "Simplify \\((2^3 \\times 3^2 \\times 5)^2\\)",
+                        "answer": "32400",
+                        "difficulty": 5,
+                        "explanation": "\\((2^3 \\times 3^2 \\times 5)^2 = (8 \\times 9 \\times 5)^2 = 360^2 = 32400\\)"
+                    },
+                    {
+                        "id": "se22",
+                        "question": "Simplify \\(2^7 \\times 3^4 \\div 2^3 \\times 5^2\\)",
+                        "answer": "64800",
+                        "difficulty": 5,
+                        "explanation": "\\(2^7 \\times 3^4 \\div 2^3 \\times 5^2 = 2^4 \\times 3^4 \\times 5^2 = 16 \\times 81 \\times 25 = 64800\\)"
+                    }
+                ]
+            },
+            "negativeExponents": {
+                "title": "Negative Exponents",
+                "questions": [
+                    {
+                        "id": "ne1",
+                        "question": "Express \\(2^{-3}\\) as a fraction",
+                        "answer": "1/8",
+                        "difficulty": 1,
+                        "explanation": "\\(2^{-3} = \\frac{1}{2^3} = \\frac{1}{8}\\)"
+                    },
+                    {
+                        "id": "ne2",
+                        "question": "Express \\(3^{-2}\\) as a fraction",
+                        "answer": "1/9",
+                        "difficulty": 1,
+                        "explanation": "\\(3^{-2} = \\frac{1}{3^2} = \\frac{1}{9}\\)"
+                    },
+                    {
+                        "id": "ne3",
+                        "question": "Express \\(5^{-1}\\) as a fraction",
+                        "answer": "1/5",
+                        "difficulty": 1,
+                        "explanation": "\\(5^{-1} = \\frac{1}{5}\\)"
+                    },
+                    {
+                        "id": "ne4",
+                        "question": "Express \\(2^{-4}\\) as a fraction",
+                        "answer": "1/16",
+                        "difficulty": 1,
+                        "explanation": "\\(2^{-4} = \\frac{1}{2^4} = \\frac{1}{16}\\)"
+                    },
+                    {
+                        "id": "ne5",
+                        "question": "Simplify \\(2^{-2} \\times 2^{3}\\)",
+                        "answer": "2",
+                        "difficulty": 2,
+                        "explanation": "\\(2^{-2} \\times 2^{3} = 2^{-2+3} = 2^1 = 2\\)"
+                    },
+                    {
+                        "id": "ne6",
+                        "question": "Express \\(4^{-2}\\) as a fraction",
+                        "answer": "1/16",
+                        "difficulty": 2,
+                        "explanation": "\\(4^{-2} = (2^2)^{-2} = 2^{-4} = \\frac{1}{2^4} = \\frac{1}{16}\\)"
+                    },
+                    {
+                        "id": "ne7",
+                        "question": "Simplify \\(3^{-1} \\times 3^{-2}\\)",
+                        "answer": "1/27",
+                        "difficulty": 2,
+                        "explanation": "\\(3^{-1} \\times 3^{-2} = 3^{-3} = \\frac{1}{3^3} = \\frac{1}{27}\\)"
+                    },
+                    {
+                        "id": "ne8",
+                        "question": "Express \\((2^{-2})^3\\) as a fraction",
+                        "answer": "1/64",
+                        "difficulty": 2,
+                        "explanation": "\\((2^{-2})^3 = 2^{-6} = \\frac{1}{2^6} = \\frac{1}{64}\\)"
+                    },
+                    {
+                        "id": "ne9",
+                        "question": "Simplify \\(2^{-3} \\times 3^{-2}\\)",
+                        "answer": "1/72",
+                        "difficulty": 3,
+                        "explanation": "\\(2^{-3} \\times 3^{-2} = \\frac{1}{2^3} \\times \\frac{1}{3^2} = \\frac{1}{8 \\times 9} = \\frac{1}{72}\\)"
+                    },
+                    {
+                        "id": "ne10",
+                        "question": "Simplify \\(2^{-2} \\div 2^{-4}\\)",
+                        "answer": "4",
+                        "difficulty": 3,
+                        "explanation": "\\(2^{-2} \\div 2^{-4} = 2^{-2-(-4)} = 2^2 = 4\\)"
+                    },
+                    {
+                        "id": "ne11",
+                        "question": "Express \\(9^{-2}\\) as a fraction",
+                        "answer": "1/81",
+                        "difficulty": 3,
+                        "explanation": "\\(9^{-2} = (3^2)^{-2} = 3^{-4} = \\frac{1}{3^4} = \\frac{1}{81}\\)"
+                    },
+                    {
+                        "id": "ne12",
+                        "question": "Simplify \\(2^{-2} \\times 4^{-1}\\)",
+                        "answer": "1/16",
+                        "difficulty": 3,
+                        "explanation": "\\(2^{-2} \\times 4^{-1} = 2^{-2} \\times (2^2)^{-1} = 2^{-2} \\times 2^{-2} = 2^{-4} = \\frac{1}{16}\\)"
+                    },
+                    {
+                        "id": "ne13",
+                        "question": "Express \\((3^{-1} \\times 2^{-2})^2\\) as a fraction",
+                        "answer": "1/144",
+                        "difficulty": 4,
+                        "explanation": "\\((3^{-1} \\times 2^{-2})^2 = (\\frac{1}{3} \\times \\frac{1}{4})^2 = (\\frac{1}{12})^2 = \\frac{1}{144}\\)"
+                    },
+                    {
+                        "id": "ne14",
+                        "question": "Simplify \\(5^{-2} \\times 25^{-1}\\)",
+                        "answer": "1/625",
+                        "difficulty": 4,
+                        "explanation": "\\(5^{-2} \\times 25^{-1} = 5^{-2} \\times (5^2)^{-1} = 5^{-2} \\times 5^{-2} = 5^{-4} = \\frac{1}{625}\\)"
+                    },
+                    {
+                        "id": "ne15",
+                        "question": "Express \\(2^{-3} \\times 3^{-2} \\times 5^{-1}\\) as a fraction",
+                        "answer": "1/360",
+                        "difficulty": 4,
+                        "explanation": "\\(2^{-3} \\times 3^{-2} \\times 5^{-1} = \\frac{1}{2^3} \\times \\frac{1}{3^2} \\times \\frac{1}{5} = \\frac{1}{8 \\times 9 \\times 5} = \\frac{1}{360}\\)"
+                    },
+                    {
+                        "id": "ne16",
+                        "question": "Simplify \\((2^{-1} \\times 3^{-1})^3\\)",
+                        "answer": "1/216",
+                        "difficulty": 4,
+                        "explanation": "\\((2^{-1} \\times 3^{-1})^3 = (\\frac{1}{6})^3 = \\frac{1}{216}\\)"
+                    },
+                    {
+                        "id": "ne17",
+                        "question": "Express \\(8^{-2} \\times 4^{-3}\\) as a fraction",
+                        "answer": "1/32768",
+                        "difficulty": 5,
+                        "explanation": "\\(8^{-2} \\times 4^{-3} = (2^3)^{-2} \\times (2^2)^{-3} = 2^{-6} \\times 2^{-6} = 2^{-12} = \\frac{1}{32768}\\)"
+                    },
+                    {
+                        "id": "ne18",
+                        "question": "Simplify \\((2^{-2} \\times 3^{-1})^3 \\times 5^{-2}\\)",
+                        "answer": "1/10800",
+                        "difficulty": 5,
+                        "explanation": "\\((2^{-2} \\times 3^{-1})^3 \\times 5^{-2} = (\\frac{1}{4} \\times \\frac{1}{3})^3 \\times \\frac{1}{25} = (\\frac{1}{12})^3 \\times \\frac{1}{25} = \\frac{1}{1728} \\times \\frac{1}{25} = \\frac{1}{10800}\\)"
+                    },
+                    {
+                        "id": "ne19",
+                        "question": "Express \\(16^{-2} \\times 9^{-2} \\times 5^{-2}\\) as a fraction",
+                        "answer": "1/1000000",
+                        "difficulty": 5,
+                        "explanation": "\\(16^{-2} \\times 9^{-2} \\times 5^{-2} = (2^4)^{-2} \\times (3^2)^{-2} \\times 5^{-2} = 2^{-8} \\times 3^{-4} \\times 5^{-2} = \\frac{1}{256} \\times \\frac{1}{81} \\times \\frac{1}{25} = \\frac{1}{1000000}\\)"
+                    },
+                    {
+                        "id": "ne20",
+                        "question": "Simplify \\((2^{-3} \\times 4^{-2})^2 \\times 5^{-2}\\)",
+                        "answer": "1/40000",
+                        "difficulty": 5,
+                        "explanation": "\\((2^{-3} \\times 4^{-2})^2 \\times 5^{-2} = (2^{-3} \\times (2^2)^{-2})^2 \\times 5^{-2} = (2^{-3} \\times 2^{-4})^2 \\times 5^{-2} = (2^{-7})^2 \\times 5^{-2} = 2^{-14} \\times 5^{-2} = \\frac{1}{16384} \\times \\frac{1}{25} = \\frac{1}{40000}\\)"
+                    },
+                    {
+                        "id": "ne21",
+                        "question": "Express \\((3^{-2} \\times 2^{-3})^3\\) as a fraction",
+                        "answer": "1/13824",
+                        "difficulty": 5,
+                        "explanation": "\\((3^{-2} \\times 2^{-3})^3 = (\\frac{1}{9} \\times \\frac{1}{8})^3 = (\\frac{1}{72})^3 = \\frac{1}{13824}\\)"
+                    }
+                ]
+            }
+        };
+
+        // Global state
+        let currentSection = null;
+        let currentQuestionId = null;
+        let questionStats = {};
+        let activeQuestionBank = [];
+        let difficultyRange = { min: 1, max: 5 };
+        let stats = {
+            correct: 0,
+            skipped: 0,
+            total: 0,
+            answered: 0
+        };
+
+        // Show next question
+        function showNextQuestion() {
+            const question = getRandomQuestion();
+            if (!question) {
+                showTestComplete();
+                return;
+            }
+
+            currentQuestionId = question.id;
+            currentSection = question.sectionId;
+
+            // Get the container
+            const container = document.getElementById('question-display');
+
+            // Clear the existing content
+            container.innerHTML = '';
+
+            // Show the container
+            container.style.display = 'block';
+
+            let placeholder = "Type your answer";
+            let hint = "";
+            if (question.notation === "radical") {
+                hint = "Use √ for square root, ∛ for cube root";
+                placeholder = "Example: 2√3 or 5∛2";
+            } else if (question.notation === "exponent") {
+                hint = "Use ^ for exponents";
+                placeholder = "Example: 2^(1/2) or 3^(1/3)";
+            }
+
+            // Create new elements instead of using innerHTML
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+
+            const questionText = document.createElement('p');
+            questionText.innerHTML = question.question;
+
+            const hintText = document.createElement('p');
+            hintText.className = 'hint';
+            hintText.style.fontSize = '0.9em';
+            hintText.style.color = '#666';
+            hintText.textContent = hint;
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'answer-input';
+            input.placeholder = placeholder;
+
+            const feedback = document.createElement('div');
+            feedback.className = 'feedback';
+
+            const buttonGroup = document.createElement('div');
+            buttonGroup.className = 'button-group';
+
+            const submitBtn = document.createElement('button');
+            submitBtn.className = 'submit-btn';
+            submitBtn.textContent = 'Submit';
+
+            const skipBtn = document.createElement('button');
+            skipBtn.className = 'skip-btn';
+            skipBtn.textContent = 'Skip';
+
+            // Append elements
+            buttonGroup.appendChild(submitBtn);
+            buttonGroup.appendChild(skipBtn);
+
+            questionDiv.appendChild(questionText);
+            questionDiv.appendChild(hintText);
+            questionDiv.appendChild(input);
+            questionDiv.appendChild(feedback);
+            questionDiv.appendChild(buttonGroup);
+
+            container.appendChild(questionDiv);
+
+            // Create function reference for checking answer
+            const submitHandler = () => {
+                // Get elements from within their scope
+                const currentInput = input;
+                const currentFeedback = feedback;
+                const currentSubmitBtn = submitBtn;
+                const currentButtonGroup = buttonGroup;
+
+                // Prevent multiple submissions
+                if (currentSubmitBtn.disabled) {
+                    return;
+                }
+
+                const currentQuestion = activeQuestionBank.find(q => q.id === currentQuestionId);
+                if (!currentQuestion) return;
+
+                let normalizedInput = currentInput.value.trim();
+                let normalizedAnswer = currentQuestion.answer;
+
+                if (currentQuestion.notation) {
+                    normalizedInput = normalizeAnswer(currentInput.value);
+                    normalizedAnswer = normalizeAnswer(currentQuestion.answer);
+                } else {
+                    normalizedInput = currentInput.value.toLowerCase().replace(/\s/g, '');
+                    normalizedAnswer = currentQuestion.answer.toLowerCase().replace(/\s/g, '');
+                }
+
+                const isCorrect = normalizedInput === normalizedAnswer;
+
+                if (!questionStats[currentQuestion.id]) {
+                    questionStats[currentQuestion.id] = {
+                        correct: 0,
+                        incorrect: 0,
+                        difficulty: currentQuestion.difficulty || 1
+                    };
+                }
+
+                if (isCorrect) {
+                    questionStats[currentQuestion.id].correct++;
+                    stats.correct++;
+                    currentFeedback.innerHTML = `Correct! ${currentQuestion.explanation}`;
+                    currentFeedback.className = 'feedback correct';
+                } else {
+                    questionStats[currentQuestion.id].incorrect++;
+                    currentFeedback.innerHTML = `Incorrect. The answer is ${currentQuestion.answer}. ${currentQuestion.explanation}`;
+                    currentFeedback.className = 'feedback incorrect';
+                }
+
+                questionStats[currentQuestion.id].lastAnswered = new Date();
+                stats.answered++;
+                updateStats();
+                currentFeedback.style.display = 'block';
+
+                // Disable input and submit button
+                currentInput.disabled = true;
+                currentSubmitBtn.disabled = true;
+
+                // Create and add next button
+                const nextButton = document.createElement('button');
+                nextButton.textContent = 'Next Question';
+                nextButton.className = 'next-btn';
+                nextButton.addEventListener('click', showNextQuestion);
+                currentButtonGroup.appendChild(nextButton);
+
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+            };
+
+            // Add event handlers with the submit handler function
+            const handleKeyPress = (e) => {
+                if (e.key === 'Enter' && !submitBtn.disabled) {
+                    submitHandler();
+                }
+            };
+
+            input.addEventListener('keypress', handleKeyPress);
+            submitBtn.addEventListener('click', submitHandler);
+            skipBtn.addEventListener('click', skipQuestion);
+
+            // Set focus to input
+            input.focus();
+            updateStats();
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+        }
+
+        // Handle answer submission
+
+        function checkAnswer() {
+            const input = document.querySelector('.answer-input');
+            const feedback = document.querySelector('.feedback');
+            const submitButton = document.querySelector('.submit-btn');
+            const buttonGroup = document.querySelector('.button-group');
+
+            // Prevent multiple submissions
+            if (submitButton.disabled) {
+                return;
+            }
+
+            const currentQuestion = activeQuestionBank.find(q => q.id === currentQuestionId);
+            if (!currentQuestion) return;
+
+            let normalizedInput = input.value.trim();
+            let normalizedAnswer = currentQuestion.answer;
+
+            if (currentQuestion.notation) {
+                normalizedInput = normalizeAnswer(input.value);
+                normalizedAnswer = normalizeAnswer(currentQuestion.answer);
+            } else {
+                normalizedInput = input.value.toLowerCase().replace(/\s/g, '');
+                normalizedAnswer = currentQuestion.answer.toLowerCase().replace(/\s/g, '');
+            }
+
+            const isCorrect = normalizedInput === normalizedAnswer;
+
+            if (!questionStats[currentQuestion.id]) {
+                questionStats[currentQuestion.id] = {
+                    correct: 0,
+                    incorrect: 0,
+                    difficulty: currentQuestion.difficulty || 1
+                };
+            }
+
+            if (isCorrect) {
+                questionStats[currentQuestion.id].correct++;
+                stats.correct++;
+                feedback.innerHTML = `Correct! ${currentQuestion.explanation}`;
+                feedback.className = 'feedback correct';
+            } else {
+                questionStats[currentQuestion.id].incorrect++;
+                feedback.innerHTML = `Incorrect. The answer is ${currentQuestion.answer}. ${currentQuestion.explanation}`;
+                feedback.className = 'feedback incorrect';
+            }
+
+            questionStats[currentQuestion.id].lastAnswered = new Date();
+            stats.answered++;
+            updateStats();
+            feedback.style.display = 'block';
+
+            // Disable input and submit button
+            input.disabled = true;
+            submitButton.disabled = true;
+
+            // Create and add next button
+            const nextButton = document.createElement('button');
+            nextButton.textContent = 'Next Question';
+            nextButton.className = 'next-btn';
+            nextButton.addEventListener('click', () => {
+                showNextQuestion();
+            });
+            buttonGroup.appendChild(nextButton);
+
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+        }
+
+
+
+
+
+
+        // Update closeAllSections (simplified since we only have one container):
+        function closeAllSections() {
+            const container = document.getElementById('question-display');
+            container.innerHTML = '';
+        }
+
+        // Update showTestComplete:
+        function showTestComplete() {
+            const container = document.getElementById('test-container');
+            const sectionStats = Object.entries(testData).map(([sectionId, sectionData]) => {
+                const sectionQuestions = sectionData.questions.length;
+                const correctAnswers = sectionData.questions.filter(q =>
+                    questionStats[q.id]?.correct > 0
+                ).length;
+                return `<li>${sectionData.title}: ${correctAnswers}/${sectionQuestions} completed</li>`;
+            }).join('');
+
+            container.innerHTML = `
+        <div class="section">
+            <h2>Section Progress</h2>
+            <ul>${sectionStats}</ul>
+            <p>Total correct: ${stats.correct}</p>
+            <p>Total skipped: ${stats.skipped}</p>
+            <button onclick="location.reload()">Restart Assessment</button>
+        </div>
+    `;
+        }
+
+
+        function createSectionNav() {
+            const navContainer = document.createElement('div');
+            navContainer.className = 'section';
+            navContainer.innerHTML = `
+                <h3>Section Navigation</h3>
+                <div class="section-nav" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    ${Object.entries(testData).map(([sectionId, sectionData]) => `
+                        <button class="section-btn" data-section="${sectionId}">
+                            ${sectionData.title}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+
+            // Add styles for section navigation
+            const style = document.createElement('style');
+            style.textContent = `
+                .section-btn {
+                    background-color: #2196F3;
+                    color: white;
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                }
+                .section-btn:hover {
+                    background-color: #1976D2;
+                }
+                .section-btn.active {
+                    background-color: #1565C0;
+                }
+            `;
+            document.head.appendChild(style);
+
+            document.body.insertBefore(navContainer, document.getElementById('test-container'));
+
+            // Add click handlers for section buttons
+            document.querySelectorAll('.section-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    selectSection(btn.dataset.section);
+                });
+            });
+        }
+
+        // Add function to select and show section
+        function selectSection(sectionId) {
+            currentSection = sectionId;
+
+            // Update active button state
+            document.querySelectorAll('.section-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.section === sectionId);
+            });
+
+            // Filter questions for this section
+            activeQuestionBank = Object.entries(testData)
+                .filter(([id, _]) => id === sectionId)
+                .flatMap(([sectionId, sectionData]) =>
+                    sectionData.questions
+                        .filter(q => {
+                            const difficulty = q.difficulty || 1;
+                            return difficulty >= difficultyRange.min && difficulty <= difficultyRange.max;
+                        })
+                        .map(q => ({ ...q, sectionId }))
+                );
+
+            // Update stats before showing next question
+            updateStats();
+            showNextQuestion();
+        }
+
+        // Modify getRandomQuestion to work with current section
+        function getRandomQuestion() {
+            if (activeQuestionBank.length === 0) return null;
+
+            // Filter questions from current section that haven't been answered correctly
+            const availableQuestions = activeQuestionBank.filter(question =>
+                !questionStats[question.id]?.lastAnswered ||
+                questionStats[question.id]?.incorrect > 0
+            );
+
+            if (availableQuestions.length === 0) {
+                return null; // All questions in section answered correctly
+            }
+
+            const randomIndex = Math.floor(Math.random() * availableQuestions.length);
+            return availableQuestions[randomIndex];
+        }
+
+        // Initialize question stats
+        function initializeQuestionStats() {
+            // Try to load from localStorage first
+            const savedStats = localStorage.getItem('questionStats');
+            if (savedStats) {
+                questionStats = JSON.parse(savedStats);
+            } else {
+                Object.entries(testData).forEach(([sectionId, sectionData]) => {
+                    sectionData.questions.forEach(question => {
+                        if (!questionStats[question.id]) {
+                            questionStats[question.id] = {
+                                correct: 0,
+                                incorrect: 0,
+                                lastAnswered: null,
+                                difficulty: question.difficulty || 1
+                            };
+                        }
+                    });
+                });
+            }
+        }
+
+        // Update stats display
+        function updateStats() {
+            // Calculate total questions in current section
+            const totalQuestions = activeQuestionBank.length;
+
+            // Calculate progress based on current section's answered questions
+            const answeredInSection = Object.entries(questionStats)
+                .filter(([id]) => activeQuestionBank.find(q => q.id === id))
+                .filter(([_, stats]) => stats.correct > 0)
+                .length;
+
+            const progress = totalQuestions > 0 ? (answeredInSection / totalQuestions * 100) : 0;
+
+            // Update display
+            document.getElementById('progress-stat').textContent = `${Math.round(progress)}%`;
+            document.getElementById('correct-stat').textContent = `${stats.correct}/${stats.answered}`;
+            document.getElementById('skipped-stat').textContent = stats.skipped;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+
+            // Save stats to localStorage
+            localStorage.setItem('questionStats', JSON.stringify(questionStats));
+        }
+
+        // Filter questions by difficulty
+        function filterQuestionsByDifficulty() {
+            if (difficultyRange.min > difficultyRange.max) {
+                [difficultyRange.min, difficultyRange.max] = [difficultyRange.max, difficultyRange.min];
+            }
+
+            activeQuestionBank = [];
+            Object.entries(testData).forEach(([sectionId, sectionData]) => {
+                sectionData.questions.forEach(question => {
+                    const difficulty = question.difficulty || 1;
+                    if (difficulty >= difficultyRange.min && difficulty <= difficultyRange.max) {
+                        activeQuestionBank.push({
+                            ...question,
+                            sectionId
+                        });
+                    }
+                });
+            });
+        }
+
+
+
+
+        // Generate performance report
+        function generateReport() {
+            const reportContainer = document.createElement('div');
+            reportContainer.className = 'section';
+            reportContainer.innerHTML = `
+                <h2>Question Performance Report</h2>
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Question ID</th>
+                            <th>Difficulty</th>
+                            <th>Correct</th>
+                            <th>Incorrect</th>
+                            <th>Success Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${Object.entries(questionStats)
+                    .map(([id, stats]) => {
+                        const total = stats.correct + stats.incorrect;
+                        const rate = total > 0 ? ((stats.correct / total) * 100).toFixed(1) : 0;
+                        return `
+                                    <tr>
+                                        <td>${id}</td>
+                                        <td>${stats.difficulty || 1}</td>
+                                        <td>${stats.correct}</td>
+                                        <td>${stats.incorrect}</td>
+                                        <td>${rate}%</td>
+                                    </tr>
+                                    `;
+                    }).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('test-container').appendChild(reportContainer);
+        }
+
+        // Add difficulty filter UI
+        function addDifficultyFilter() {
+            const filterContainer = document.createElement('div');
+            filterContainer.className = 'section';
+            filterContainer.innerHTML = `
+                <h3>Difficulty Filter</h3>
+                <div class="filter-controls">
+                    <label>Min: <input type="number" id="min-difficulty" value="1" min="1" max="5"></label>
+                    <label>Max: <input type="number" id="max-difficulty" value="5" min="1" max="5"></label>
+                    <button id="apply-filter">Apply Filter</button>
+                </div>
+            `;
+
+            document.body.insertBefore(filterContainer, document.getElementById('test-container'));
+
+            document.getElementById('apply-filter').addEventListener('click', () => {
+                const minVal = parseInt(document.getElementById('min-difficulty').value);
+                const maxVal = parseInt(document.getElementById('max-difficulty').value);
+                difficultyRange.min = Math.min(minVal, maxVal);
+                difficultyRange.max = Math.max(minVal, maxVal);
+                filterQuestionsByDifficulty();
+                showNextQuestion();
+            });
+        }
+
+        // Normalize answer for comparison
+        function normalizeAnswer(answer) {
+            let normalized = answer.toLowerCase().replace(/\s/g, '');
+            normalized = normalized.replace(/√/g, 'sqrt');
+            normalized = normalized.replace(/∛/g, 'cbrt');
+            normalized = normalized.replace(/\^?\(?1\/2\)?/g, '^(1/2)');
+            normalized = normalized.replace(/\^?\(?1\/3\)?/g, '^(1/3)');
+            return normalized;
+        }
+
+        // Handle skipping questions
+        function skipQuestion() {
+            stats.skipped++;
+            showNextQuestion();
+            updateStats();
+        }
+
+        // Initialize the test
+        window.onload = function () {
+            // Initialize features
+            initializeQuestionStats();
+            addDifficultyFilter();
+
+            // Add report button
+            const reportBtn = document.createElement('button');
+            reportBtn.textContent = 'Generate Report';
+            reportBtn.className = 'submit-btn';
+            reportBtn.style.marginTop = '20px';
+            reportBtn.addEventListener('click', generateReport);
+            document.body.insertBefore(reportBtn, document.getElementById('test-container'));
+
+            // Create section navigation
+            createSectionNav();
+
+            // Create single question container
+            const container = document.getElementById('test-container');
+            container.innerHTML = '<div id="question-display" class="question-container"></div>';
+
+            // Calculate total questions
+            stats.total = Object.values(testData).reduce((acc, section) =>
+                acc + section.questions.length, 0);
+
+            // Initialize with first section
+            selectSection(Object.keys(testData)[0]);
+
+            // Add error handling for MathJax
+            MathJax.Hub.Register.MessageHook("Math Processing Error", function (message) {
+                console.error("MathJax Error:", message);
+            });
+        };
+    </script>
+</body>
+
+</html>
