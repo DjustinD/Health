@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relations and Functions Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .card {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .card-header {
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    .section-title {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #444;
+    }
+
+    .question {
+      margin-bottom: 30px;
+      padding: 20px;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+    }
+
+    .question p {
+      margin: 0 0 15px;
+      font-size: 16px;
+    }
+
+    .options label {
+      display: block;
+      margin-bottom: 10px;
+      cursor: pointer;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .options label:hover {
+      background-color: #f5f5f5;
+    }
+
+
+
+    .coordinate-plane .grid-line {
+      position: absolute;
+      background-color: #eee;
+    }
+
+    .coordinate-plane .axis {
+      position: absolute;
+      background-color: #000;
+    }
+
+    .coordinate-plane .point {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #007bff;
+      transform: translate(-50%, -50%);
+    }
+
+    .feedback {
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 15px;
+      display: none;
+    }
+
+    .feedback.correct {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .feedback.incorrect {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .submit-btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .submit-btn:hover {
+      background-color: #0056b3;
+    }
+
+    .submit-btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .nav-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .nav-btn.prev {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .nav-btn.next {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .nav-btn:disabled {
+      background-color: #ddd;
+      cursor: not-allowed;
+    }
+
+    .progress {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #666;
+    }
+
+    /* Add new styles for arrow diagrams */
+    .arrow-diagram {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin: 20px 0;
+    }
+
+    .set-circle {
+      width: 150px;
+      height: 200px;
+      border: 2px solid #333;
+      border-radius: 75px;
+      position: relative;
+      background: #fff;
+    }
+
+    .set-label {
+      position: absolute;
+      top: -25px;
+      width: 100%;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .set-element {
+      position: absolute;
+      padding: 5px 10px;
+      background: #fff;
+      border-radius: 3px;
+    }
+
+    .arrow-container {
+      position: relative;
+      height: 200px;
+      flex-grow: 1;
+      margin: 0 20px;
+    }
+
+    .arrow {
+      position: absolute;
+      height: 2px;
+      background: #333;
+      transform-origin: left center;
+    }
+
+    .arrow::after {
+      content: '';
+      position: absolute;
+      right: -8px;
+      top: -4px;
+      width: 0;
+      height: 0;
+      border-left: 8px solid #333;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+    }
+
+    .vertical-line-graph {
+      position: relative;
+      width: 400px;
+      height: 400px;
+      border: 1px solid #ddd;
+      background-color: #fff;
+      margin: 20px auto;
+    }
+
+    .function-graph {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Add styles for interval notation */
+    .interval-input {
+      width: 200px;
+      padding: 8px;
+      font-size: 16px;
+      margin: 10px 0;
+    }
+
+    /* Add styles for function notation input */
+    .function-input {
+      width: 300px;
+      padding: 8px;
+      font-size: 16px;
+      margin: 10px 0;
+    }
+
+    .target-point {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: 2px solid #ccc;
+      background-color: transparent;
+      transform: translate(-50%, -50%);
+    }
+
+    .user-point {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #007bff;
+      transform: translate(-50%, -50%);
+    }
+
+    .coordinate-plane {
+  position: relative;
+  width: 400px;
+  height: 400px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  margin: 20px auto;
+  cursor: crosshair;
+}
+
+.point {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #007bff;
+  transform: translate(-50%, -50%);
+}
+
+#remaining-points {
+  font-family: monospace;
+  color: #666;
+}
+
+.point-list {
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Add styles for the connection lines */
+#connection-path {
+  pointer-events: none;
+}
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Relations and Functions Test</div>
+    </div>
+    <div class="card-content">
+      <div id="progress" class="progress"></div>
+      <div id="test-content"></div>
+      <div class="navigation">
+        <button class="nav-btn prev" onclick="prevQuestion()">Previous</button>
+        <button class="nav-btn next" onclick="nextQuestion()">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        id: 'q1',
+        section: 'Coordinate Plane Basics',
+        type: 'multiple-choice',
+        question: 'Which axis is horizontal?',
+        options: ['x-axis', 'y-axis'],
+        correctAnswer: 'x-axis',
+        explanation: 'The x-axis is always the horizontal axis in a coordinate plane.'
+      },
+      {
+        id: 'q2',
+        section: 'Coordinate Plane Basics',
+        type: 'multiple-choice',
+        question: 'The point (3, 4) is located in which quadrant?',
+        options: ['Quadrant I', 'Quadrant II', 'Quadrant III', 'Quadrant IV'],
+        correctAnswer: 'Quadrant I',
+        explanation: 'Quadrant I contains points where both x and y are positive.'
+      },
+      {
+        id: 'q3',
+        section: 'Point Plotting',
+        type: 'coordinate-plane',
+        question: 'Plot the point (2, 3) on the coordinate plane.',
+        correctAnswer: { x: 2, y: 3 },
+        explanation: 'The point (2, 3) is located 2 units right and 3 units up from the origin.'
+      },
+      {
+        id: 'q4',
+        section: 'Relations',
+        type: 'relation-representation',
+        question: 'For the digital clock segment relation, represent the following data as a set of ordered pairs: Digits 0-3 with segments: 0→6, 1→2, 2→5, 3→5',
+        correctAnswer: '{(0,6), (1,2), (2,5), (3,5)}',
+        explanation: 'Each ordered pair represents (digit, number of segments). The order matters and we use parentheses for pairs and curly braces for the set.'
+      },
+      {
+        id: 'q5',
+        section: 'Functions',
+        type: 'multiple-choice',
+        question: 'Is the following relation a function? {(1,2), (2,4), (3,6), (1,4)}',
+        options: ['Yes', 'No'],
+        correctAnswer: 'No',
+        explanation: 'This is not a function because the input value 1 is mapped to two different output values (2 and 4). In a function, each input must have exactly one output.'
+      },
+      {
+        id: 'q6',
+        section: 'Relations and Arrow Diagrams',
+        type: 'arrow-diagram',
+        question: 'Look at the following arrow diagram. Is this relation a function?',
+        data: {
+          domain: ['1', '2', '3'],
+          range: ['a', 'b', 'c'],
+          arrows: [
+            { from: '1', to: 'a' },
+            { from: '2', to: 'b' },
+            { from: '2', to: 'c' },
+            { from: '3', to: 'a' }
+          ]
+        },
+        options: ['Yes', 'No'],
+        correctAnswer: 'No',
+        explanation: 'This is not a function because element 2 in the domain maps to two different elements in the range (b and c). In a function, each element in the domain must map to exactly one element in the range.'
+      },
+      {
+        id: 'q7',
+        section: 'Vertical Line Test',
+        type: 'multiple-choice',
+        question: 'Why does a vertical line test determine if a relation is a function?',
+        options: [
+          'Because it shows if one x-value maps to multiple y-values',
+          'Because it shows if one y-value maps to multiple x-values',
+          'Because it shows if the graph is continuous',
+          'Because it shows if the graph is symmetric'
+        ],
+        correctAnswer: 'Because it shows if one x-value maps to multiple y-values',
+        explanation: 'A vertical line test works because if a vertical line intersects the graph more than once, it means that a single x-value (input) corresponds to multiple y-values (outputs), which violates the definition of a function.'
+      },
+      {
+        id: 'q8',
+        section: 'Interval Notation',
+        type: 'text-input',
+        question: 'Express the following in interval notation: All real numbers greater than -2 and less than or equal to 5',
+        correctAnswer: '(-2,5]',
+        explanation: 'We use a parenthesis "(" for -2 because we want numbers greater than -2 (not including -2), and we use a bracket "]" for 5 because we want numbers less than or equal to 5 (including 5).'
+      },
+      {
+        id: 'q9',
+        section: 'Function Notation',
+        type: 'text-input',
+        question: 'If f(x) = 2x + 3, find f(4)',
+        correctAnswer: '11',
+        explanation: 'To find f(4), we replace x with 4 in the function: f(4) = 2(4) + 3 = 8 + 3 = 11'
+      },
+      {
+        id: 'q10',
+        section: 'Relations to Functions',
+        type: 'table-to-function',
+        question: 'Given the following table of values, determine if it represents a function and explain why:',
+        data: {
+          x: [1, 2, 3, 1],
+          y: [4, 5, 6, 7]
+        },
+        options: ['Yes', 'No'],
+        correctAnswer: 'No',
+        explanation: 'This is not a function because the input value 1 maps to two different output values (4 and 7). In a function, each input value must map to exactly one output value.'
+      },
+      {
+        id: 'q11',
+        section: 'Function Domain',
+        type: 'multiple-choice',
+        question: 'What is the domain of the function f(x) = 1/(x-2)?',
+        options: [
+          'All real numbers',
+          'All real numbers except 2',
+          'All real numbers except 0',
+          'All positive numbers'
+        ],
+        correctAnswer: 'All real numbers except 2',
+        explanation: 'The domain excludes x = 2 because division by zero is undefined. When x = 2, the denominator (x-2) equals 0.'
+      },
+      {
+        id: 'q12',
+        section: 'Relations and Arrow Diagrams',
+        type: 'arrow-diagram',
+        question: 'Look at the following arrow diagram. Is this a one-to-one function?',
+        data: {
+          domain: ['a', 'b', 'c'],
+          range: ['1', '2', '3'],
+          arrows: [
+            { from: 'a', to: '1' },
+            { from: 'b', to: '2' },
+            { from: 'c', to: '2' }
+          ]
+        },
+        options: ['Yes', 'No'],
+        correctAnswer: 'No',
+        explanation: 'This is not a one-to-one function because two different domain elements (b and c) map to the same range element (2). In a one-to-one function, each element in the range is paired with at most one element in the domain.'
+      },
+      {
+        id: 'q13',
+        section: 'Set Notation',
+        type: 'text-input',
+        question: 'Express the following in set notation: All real numbers that are greater than or equal to -1 and less than 3',
+        correctAnswer: '[-1,3)',
+        explanation: 'We use a square bracket [ for -1 because we include it (greater than or equal to), and a parenthesis ) for 3 because we don\'t include it (less than).'
+      },
+      {
+        id: 'q14',
+        section: 'Function Types',
+        type: 'multiple-choice',
+        question: 'A function that pairs each input with a unique output AND each output with a unique input is called:',
+        options: [
+          'One-to-one function',
+          'Onto function',
+          'Bijective function',
+          'Linear function'
+        ],
+        correctAnswer: 'Bijective function',
+        explanation: 'A bijective function is both one-to-one (injective) and onto (surjective), meaning each element in the domain maps to a unique element in the range, and each element in the range is mapped to by an element in the domain.'
+      },
+      {
+        id: 'q15',
+        section: 'Graph Interpretation',
+        type: 'table-to-function',
+        question: 'Given the following input-output pairs, could this represent a one-to-one function?',
+        data: {
+          x: [2, 4, 6, 8],
+          y: [1, 2, 3, 3]
+        },
+        options: ['Yes', 'No'],
+        correctAnswer: 'No',
+        explanation: 'This is not a one-to-one function because two different input values (6 and 8) map to the same output value (3). In a one-to-one function, each output must come from exactly one input.'
+      },
+      {
+        id: 'q16',
+        section: 'Function Composition',
+        type: 'text-input',
+        question: 'If f(x) = x + 2 and g(x) = 3x, find (f ∘ g)(4)',
+        correctAnswer: '14',
+        explanation: '(f ∘ g)(4) means f(g(4)). First calculate g(4) = 3(4) = 12, then calculate f(12) = 12 + 2 = 14.'
+      },
+      {
+        id: 'q17',
+        section: 'Relations and Functions',
+        type: 'arrow-diagram',
+        question: 'Look at the following arrow diagram. Is this relation onto (surjective)?',
+        data: {
+          domain: ['1', '2', '3', '4'],
+          range: ['a', 'b', 'c'],
+          arrows: [
+            { from: '1', to: 'a' },
+            { from: '2', to: 'b' },
+            { from: '3', to: 'b' },
+            { from: '4', to: 'a' }
+          ]
+        },
+        options: ['Yes', 'No'],
+        correctAnswer: 'No',
+        explanation: 'This relation is not onto because element c in the range is not mapped to by any element in the domain. For a relation to be onto, every element in the range must be mapped to by at least one element in the domain.'
+      },
+      {
+        id: 'q18',
+        section: 'Function Evaluation',
+        type: 'text-input',
+        question: 'Given f(x) = |x - 1|, find f(-2)',
+        correctAnswer: '3',
+        explanation: 'To find f(-2), substitute -2 for x: f(-2) = |(-2) - 1| = |-3| = 3. The absolute value makes negative numbers positive.'
+      },
+      {
+        id: 'q19',
+        section: 'Domain and Range',
+        type: 'multiple-choice',
+        question: 'What is the range of the function f(x) = x²?',
+        options: [
+          'All real numbers',
+          'All negative numbers',
+          'All non-negative numbers',
+          'All positive numbers'
+        ],
+        correctAnswer: 'All non-negative numbers',
+        explanation: 'When you square a real number, the result is always greater than or equal to zero. This means the range of f(x) = x² is [0,∞), or all non-negative numbers.'
+      },
+      {
+        id: 'q20',
+        section: 'Function Properties',
+        type: 'multiple-choice',
+        question: 'A function f(x) is increasing on an interval if for any two numbers a and b in that interval:',
+        options: [
+          'If a < b then f(a) < f(b)',
+          'If a < b then f(a) > f(b)',
+          'If a < b then f(a) = f(b)',
+          'If a = b then f(a) < f(b)'
+        ],
+        correctAnswer: 'If a < b then f(a) < f(b)',
+        explanation: 'A function is increasing when larger input values result in larger output values. Thus, if a < b, then f(a) must be less than f(b).'
+      },
+      {
+        id: 'q21',
+        section: 'Relation Representations',
+        type: 'table-to-function',
+        question: "A student's test scores are recorded throughout the semester. The first column shows the test number, and the second column shows the score. Convert this table into ordered pairs.",
+        data: {
+          x: [1, 2, 3, 4],
+          y: [85, 92, 88, 95]
+        },
+        correctAnswer: '{(1,85), (2,92), (3,88), (4,95)}',
+        explanation: 'To convert from a table to ordered pairs, each row becomes a pair (x,y) where x is from the first column and y is from the second column. We use parentheses for each pair and enclose the entire set in curly braces.'
+      },
+      {
+        id: 'q22',
+        section: 'Arrow Diagrams',
+        type: 'arrow-diagram',
+        question: 'In a small class, students are assigned to present on different days. Look at this arrow diagram showing the assignment. Is this a function?',
+        data: {
+          domain: ['Alice', 'Bob', 'Carl', 'Diana'],
+          range: ['Mon', 'Tue', 'Wed'],
+          arrows: [
+            { from: 'Alice', to: 'Mon' },
+            { from: 'Bob', to: 'Mon' },
+            { from: 'Carl', to: 'Wed' },
+            { from: 'Diana', to: 'Tue' }
+          ]
+        },
+        options: ['Yes', 'No'],
+        correctAnswer: 'Yes',
+        explanation: 'This is a function because each student (domain) is assigned to exactly one day (range). Even though Monday has two students, that doesn\'t violate the function definition - we only care that each input has exactly one output.'
+      },
+      {
+  id: 'q23',
+  section: 'Graph Interpretation',
+  type: 'multi-point-plot',
+  question: 'Plot these points in order and determine if they represent a function: (1,2), (3,4), (5,2), (1,4). After plotting, select whether this represents a function.',
+  pointsToPlot: [
+    { x: 1, y: 2 },
+    { x: 3, y: 4 },
+    { x: 5, y: 2 },
+    { x: 1, y: 4 }
+  ],
+  options: ['Yes', 'No'],
+  correctAnswer: 'No',
+  explanation: 'When plotted, we can see that x=1 maps to both y=2 and y=4. This violates the vertical line test, so this is not a function.'
+},
+      {
+        id: 'q24',
+        section: 'Relations to Sets',
+        type: 'relation-representation',
+        question: 'A vending machine sells different snacks. Chips cost $1.50, Candy costs $1.00, and Gum costs $0.75. Represent this as a set of ordered pairs with (item, price).',
+        correctAnswer: '{(Chips,1.50), (Candy,1.00), (Gum,0.75)}',
+        explanation: 'Each item and its price form an ordered pair, with the item name first and price second. The entire set is enclosed in curly braces.'
+      },
+      {
+        id: 'q25',
+        section: 'Real Numbers and Intervals',
+        type: 'text-input',
+        question: 'Write the interval notation for all real numbers x where -3 ≤ x < 5',
+        correctAnswer: '[-3,5)',
+        explanation: 'We use [ for -3 because it\'s included (≤) and ) for 5 because it\'s not included (<).'
+      },
+      {
+  id: 'q26',
+  section: 'Interpreting Graphs',
+  type: 'multi-point-plot',  // Changed from coordinate-plane to multi-point-plot
+  question: 'Plot the points (0,0), (1,2), (2,4), (3,6). Then determine what type of function this represents.',
+  pointsToPlot: [
+    { x: 0, y: 0 },
+    { x: 1, y: 2 },
+    { x: 2, y: 4 },
+    { x: 3, y: 6 }
+  ],
+  options: ['Linear function', 'Quadratic function', 'Exponential function', 'Not a function'],
+  correctAnswer: 'Linear function',
+  explanation: 'When plotted, these points form a straight line with a constant slope of 2 (y increases by 2 for each increase of 1 in x). This is characteristic of a linear function.'
+},
+      {
+        id: 'q27',
+        section: 'Natural Numbers',
+        type: 'text-input',
+        question: 'Given the natural numbers ℕ = {1, 2, 3, ...}, write the set notation for all natural numbers less than 5.',
+        correctAnswer: '{x ∈ ℕ | x < 5}',
+        explanation: 'This set notation reads "the set of all x in the natural numbers such that x is less than 5". The resulting set would be {1, 2, 3, 4}.'
+      },
+      {
+        id: 'q28',
+        section: 'Function Notation',
+        type: 'text-input',
+        question: 'If f(x) = 3x - 1, express in words what f(2) means and then calculate its value.',
+        correctAnswer: '5',
+        explanation: 'f(2) means we input 2 into the function f(x) = 3x - 1. So f(2) = 3(2) - 1 = 6 - 1 = 5'
+      },
+      {
+        id: 'q29',
+        section: 'Vertical Line Test',
+        type: 'arrow-diagram',
+        question: 'Given this mapping diagram, would the graph of these points pass the vertical line test?',
+        data: {
+          domain: ['1', '2', '3', '1'],
+          range: ['4', '5', '6', '7'],
+          arrows: [
+            { from: '1', to: '4' },
+            { from: '2', to: '5' },
+            { from: '3', to: '6' },
+            { from: '1', to: '7' }
+          ]
+        },
+        options: ['Yes', 'No'],
+        correctAnswer: 'No',
+        explanation: 'This would not pass the vertical line test because the input value 1 maps to two different outputs (4 and 7). A vertical line at x=1 would intersect the graph twice.'
+      },
+      {
+        id: 'q30',
+        section: 'Relations and Tables',
+        type: 'table-to-function',
+        question: 'Here is a table showing the cost y in dollars for x pounds of apples. Convert this to an arrow diagram and determine if it represents a function.',
+        data: {
+          x: [1, 2, 3, 4],
+          y: [2.50, 5.00, 7.50, 10.00]
+        },
+        options: ['Yes', 'No'],
+        correctAnswer: 'Yes',
+        explanation: 'This is a function because each input (pounds) corresponds to exactly one output (cost). When drawn as an arrow diagram, each domain element would have exactly one arrow coming from it.'
+      },
+      {
+        id: 'q31',
+        section: 'Converting Representations',
+        type: 'table-to-function',
+        question: 'A fruit stand sells different fruits. Convert this price table to a set of ordered pairs.',
+        data: {
+          x: ['apple', 'banana', 'orange', 'grape'],
+          y: [0.50, 0.25, 0.75, 2.00]
+        },
+        correctAnswer: '{(apple,0.50), (banana,0.25), (orange,0.75), (grape,2.00)}',
+        explanation: 'Each fruit and its price form an ordered pair. The pairs are enclosed in parentheses and the entire set is enclosed in curly braces.'
+      },
+      {
+        id: 'q32',
+        section: 'Arrow Diagrams',
+        type: 'arrow-diagram',
+        question: 'Each student is assigned a locker number. Is this assignment relation a function?',
+        data: {
+          domain: ['Amy', 'Ben', 'Cal', 'Dan'],
+          range: ['101', '102', '103'],
+          arrows: [
+            { from: 'Amy', to: '101' },
+            { from: 'Ben', to: '102' },
+            { from: 'Cal', to: '102' },
+            { from: 'Dan', to: '103' }
+          ]
+        },
+        options: ['Yes', 'No'],
+        correctAnswer: 'No',
+        explanation: 'This is not a function because locker 102 is assigned to both Ben and Cal. A function must have exactly one output for each input.'
+      },
+      {
+        id: 'q33',
+        section: 'Graphs to Relations',
+        type: 'multi-point-plot',
+        question: 'Plot these points: (0,1), (1,1), (2,1), (3,1). What type of relation is this?',
+        options: ['Linear function', 'Constant function', 'Not a function', 'Quadratic function'],
+        correctAnswer: 'Constant function',
+        explanation: 'When plotted, all points have y=1. This is a constant function, where every input maps to the same output value.'
+      },
+      {
+        id: 'q34',
+        section: 'Sets and Relations',
+        type: 'relation-representation',
+        question: 'Each shape has a number of sides. Triangle has 3, Square has 4, Pentagon has 5, Hexagon has 6. Write this as a set of ordered pairs with (shape, sides).',
+        correctAnswer: '{(Triangle,3), (Square,4), (Pentagon,5), (Hexagon,6)}',
+        explanation: 'Each shape and its number of sides form an ordered pair. The entire set of pairs is enclosed in curly braces.'
+      },
+      {
+        id: 'q35',
+        section: 'Integer Relations',
+        type: 'text-input',
+        question: 'Using set notation, write all integers x where -2 < x ≤ 4',
+        correctAnswer: '{-1, 0, 1, 2, 3, 4}',
+        explanation: 'Starting at -2 (not included) and going up to and including 4, we list all integers: -1, 0, 1, 2, 3, and 4.'
+      },
+      {
+        id: 'q36',
+        section: 'Function Notation',
+        type: 'multiple-choice',
+        question: 'If g(x) = x² - 2x + 1, what is g(-1)?',
+        options: ['4', '2', '0', '-2'],
+        correctAnswer: '4',
+        explanation: 'To find g(-1), replace x with -1: g(-1) = (-1)² - 2(-1) + 1 = 1 + 2 + 1 = 4'
+      },
+      {
+        id: 'q37',
+        section: 'Relations to Functions',
+        type: 'arrow-diagram',
+        question: 'In this mapping of students to their favorite colors, determine if this is onto (surjective).',
+        data: {
+          domain: ['John', 'Mary', 'Pete', 'Sara'],
+          range: ['Red', 'Blue', 'Green'],
+          arrows: [
+            { from: 'John', to: 'Red' },
+            { from: 'Mary', to: 'Blue' },
+            { from: 'Pete', to: 'Red' },
+            { from: 'Sara', to: 'Blue' }
+          ]
+        },
+        options: ['Yes', 'No'],
+        correctAnswer: 'No',
+        explanation: 'This is not onto because Green in the range has no arrows pointing to it. In an onto function, every element in the range must be mapped to by at least one element in the domain.'
+      },
+      {
+        id: 'q38',
+        section: 'Tables and Functions',
+        type: 'table-to-function',
+        question: 'Given this input-output table, is this relation a function?',
+        data: {
+          x: [1, 2, 3, 2],
+          y: [4, 5, 6, 5]
+        },
+        options: ['Yes', 'No'],
+        correctAnswer: 'Yes',
+        explanation: 'This is a function because even though 2 appears twice in the input, it maps to the same output (5) both times. Each input maps to exactly one output.'
+      },
+      {
+        id: 'q39',
+        section: 'Graph Interpretation',
+        type: 'multi-point-plot',
+        question: 'Plot the points (1,1), (2,4), (3,9), (4,16). What type of relationship does this show?',
+        options: ['Linear', 'Quadratic', 'Cubic', 'Exponential'],
+        correctAnswer: 'Quadratic',
+        explanation: 'When plotted, these points form a parabola. The y-values are the squares of the x-values (y = x²), making this a quadratic function.'
+      },
+      {
+        id: 'q40',
+        section: 'Domain and Range',
+        type: 'relation-representation',
+        question: 'Given the relation {(2,4), (3,9), (4,16)}, write the domain as a set.',
+        correctAnswer: '{2, 3, 4}',
+        explanation: 'The domain is the set of all first numbers in the ordered pairs. List these numbers in a set using curly braces.'
+      },
+      {
+        id: 'q41',
+        section: 'Relations to Functions',
+        type: 'arrow-diagram',
+        question: 'Students are assigned to study groups. Look at this mapping and determine if it represents a function.',
+        data: {
+          domain: ['Alex', 'Beth', 'Chris', 'Dana'],
+          range: ['Group 1', 'Group 2', 'Group 3'],
+          arrows: [
+            { from: 'Alex', to: 'Group 1' },
+            { from: 'Beth', to: 'Group 2' },
+            { from: 'Chris', to: 'Group 3' },
+            { from: 'Dana', to: 'Group 3' }
+          ]
+        },
+        options: ['Yes', 'No'],
+        correctAnswer: 'Yes',
+        explanation: 'This is a function because each student (domain) is assigned to exactly one study group (range). Multiple students can be in the same group without violating the function definition.'
+      },
+      {
+        id: 'q42',
+        section: 'Converting Tables',
+        type: 'table-to-function',
+        question: 'A temperature conversion table shows Celsius to Fahrenheit. Convert this data to ordered pairs.',
+        data: {
+          x: [0, 10, 20, 30],
+          y: [32, 50, 68, 86]
+        },
+        correctAnswer: '{(0,32), (10,50), (20,68), (30,86)}',
+        explanation: 'Each Celsius temperature and its corresponding Fahrenheit temperature form an ordered pair (C,F). The set of all pairs is enclosed in curly braces.'
+      },
+      {
+        id: 'q43',
+        section: 'Graph Interpretation',
+        type: 'multi-point-plot',
+        question: 'Plot these ordered pairs and determine if the relation passes the vertical line test: (2,1), (2,3), (4,2), (6,1)',
+        correctAnswer: 'No',
+        explanation: 'When x=2, there are two different y-values (1 and 3). A vertical line at x=2 would intersect the graph twice, failing the vertical line test.'
+      },
+      {
+        id: 'q44',
+        section: 'Set Notation',
+        type: 'text-input',
+        question: 'Write the interval notation for all real numbers greater than -1 and less than or equal to 4.',
+        correctAnswer: '(-1,4]',
+        explanation: 'We use ( for -1 because we want numbers greater than -1 (not including -1), and ] for 4 because we want numbers less than or equal to 4 (including 4).'
+      },
+      {
+        id: 'q45',
+        section: 'Relations and Sets',
+        type: 'relation-representation',
+        question: 'Each pet has an age. Rex is 3, Fluffy is 2, Spot is 4, Max is 3. Write this as a set of ordered pairs (pet, age).',
+        correctAnswer: '{(Rex,3), (Fluffy,2), (Spot,4), (Max,3)}',
+        explanation: 'Each pet and its age form an ordered pair. We enclose each pair in parentheses and the entire set in curly braces.'
+      },
+      {
+        id: 'q46',
+        section: 'Function Properties',
+        type: 'arrow-diagram',
+        question: 'Look at this relation between numbers and their factors. Is it a one-to-one function?',
+        data: {
+          domain: ['6', '8', '9', '10'],
+          range: ['2', '3', '4', '5'],
+          arrows: [
+            { from: '6', to: '2' },
+            { from: '6', to: '3' },
+            { from: '8', to: '2' },
+            { from: '8', to: '4' },
+            { from: '9', to: '3' },
+            { from: '10', to: '2' },
+            { from: '10', to: '5' }
+          ]
+        },
+        options: ['Yes', 'No'],
+        correctAnswer: 'No',
+        explanation: 'This is not even a function because some numbers in the domain (6, 8, and 10) map to multiple factors. For it to be a function, each input must map to exactly one output.'
+      },
+      {
+        id: 'q47',
+        section: 'Function Notation',
+        type: 'text-input',
+        question: 'If h(x) = x³ - x, find h(2)',
+        correctAnswer: '6',
+        explanation: 'To find h(2), substitute 2 for x: h(2) = 2³ - 2 = 8 - 2 = 6'
+      },
+      {
+        id: 'q48',
+        section: 'Natural Numbers',
+        type: 'multiple-choice',
+        question: 'Which of these represents the set of all natural numbers less than 6?',
+        options: [
+          '{1, 2, 3, 4, 5}',
+          '{0, 1, 2, 3, 4, 5}',
+          '{1, 2, 3, 4, 5, 6}',
+          '{0, 1, 2, 3, 4}'
+        ],
+        correctAnswer: '{1, 2, 3, 4, 5}',
+        explanation: 'Natural numbers start at 1, so the set includes all counting numbers from 1 up to (but not including) 6.'
+      },
+      {
+        id: 'q49',
+        section: 'Vertical Line Test',
+        type: 'table-to-function',
+        question: 'Given this table of x and y values, would its graph pass the vertical line test?',
+        data: {
+          x: [1, 2, 3, 1],
+          y: [4, 5, 6, 7]
+        },
+        options: ['Yes', 'No'],
+        correctAnswer: 'No',
+        explanation: 'This would not pass the vertical line test because x=1 corresponds to two different y-values (4 and 7). A vertical line at x=1 would intersect the graph twice.'
+      },
+      {
+        id: 'q50',
+        section: 'Domain and Range',
+        type: 'multi-point-plot',
+        question: 'Plot the points (-2,4), (-1,1), (0,0), (1,1), (2,4). What is the range of this relation?',
+        correctAnswer: '[0,4]',
+        explanation: 'When plotted, these points form a parabola. The y-values start at 4, decrease to 0, then increase back to 4. Therefore, the range includes all numbers from 0 to 4, inclusive.'
+      }
+    ];
+    let currentQuestion = 0;
+    let answers = {};
+    let questionSubmitted = {};
+
+    function renderQuestion() {
+      const question = questions[currentQuestion];
+      const testContent = document.getElementById('test-content');
+      const progressDiv = document.getElementById('progress');
+
+      progressDiv.innerHTML = `Question ${currentQuestion + 1} of ${questions.length} - ${question.section}`;
+
+      testContent.innerHTML = `
+    <div class="question">
+      <p>${question.question}</p>
+      ${renderQuestionContent(question)}
+      <button class="submit-btn" onclick="submitAnswer()" ${questionSubmitted[question.id] ? 'disabled' : ''}>
+        ${questionSubmitted[question.id] ? 'Submitted' : 'Submit Answer'}
+      </button>
+      <div id="feedback" class="feedback"></div>
+    </div>
+  `;
+
+      // Restore point on coordinate plane if it exists
+      if (question.type === 'coordinate-plane' && answers[question.id]) {
+        const point = answers[question.id];
+        const plane = document.querySelector('.coordinate-plane');
+        if (plane) {
+          const pointElement = document.createElement('div');
+          pointElement.className = 'point';
+          pointElement.style.left = `${point.x * 20 + 200}px`;
+          pointElement.style.top = `${-point.y * 20 + 200}px`;
+          plane.appendChild(pointElement);
+        }
+      }
+
+      // Add event listeners for radio buttons
+      if (question.type === 'multiple-choice' || question.type === 'arrow-diagram' || question.type === 'table-to-function') {
+        document.querySelectorAll(`input[name="${question.id}"]`).forEach(radio => {
+          radio.addEventListener('change', (e) => {
+            handleAnswer(question.id, e.target.value);
+          });
+        });
+      }
+
+      // Update navigation buttons
+      document.querySelector('.nav-btn.prev').disabled = currentQuestion === 0;
+      document.querySelector('.nav-btn.next').disabled = currentQuestion === questions.length - 1;
+      document.querySelectorAll(`input[name="${question.id}"]`).forEach(radio => {
+  radio.addEventListener('change', handleRadioChange);
+});
+    }
+
+    function renderQuestionContent(question) {
+      switch (question.type) {
+        case 'multiple-choice':
+          return `
+            <div class="options">
+              ${question.options.map(option => `
+                <label>
+                  <input type="radio" name="${question.id}" value="${option}" 
+                         ${answers[question.id] === option ? 'checked' : ''}
+                         ${questionSubmitted[question.id] ? 'disabled' : ''}>
+                  ${option}
+                </label>
+              `).join('')}
+            </div>
+          `;
+        case 'coordinate-plane':
+          return `
+            <div class="coordinate-plane" onclick="plotPoint(event)">
+              ${Array.from({ length: 19 }).map((_, i) => `
+                <div class="grid-line" style="left: ${i * 20}px; top: 0; bottom: 0; width: 1px;"></div>
+                <div class="grid-line" style="top: ${i * 20}px; left: 0; right: 0; height: 1px;"></div>
+              `).join('')}
+              <div class="axis" style="left: 50%; top: 0; bottom: 0; width: 2px;"></div>
+              <div class="axis" style="top: 50%; left: 0; right: 0; height: 2px;"></div>
+            </div>
+          `;
+        case 'relation-representation':
+          return `
+            <input type="text" 
+                   placeholder="Enter your answer as a set of ordered pairs" 
+                   value="${answers[question.id] || ''}"
+                   ${questionSubmitted[question.id] ? 'disabled' : ''}
+                   onchange="handleAnswer('${question.id}', this.value)">
+          `;
+        case 'arrow-diagram':
+          return `
+            <div class="arrow-diagram">
+              <div class="set-circle">
+                <div class="set-label">Domain</div>
+                ${question.data.domain.map((element, i) => `
+                  <div class="set-element" style="left: 50%; top: ${25 + i * 50}px; transform: translateX(-50%);">
+                    ${element}
+                  </div>
+                `).join('')}
+              </div>
+              <div class="arrow-container">
+                ${question.data.arrows.map(arrow => {
+            const fromIdx = question.data.domain.indexOf(arrow.from);
+            const toIdx = question.data.range.indexOf(arrow.to);
+            const fromY = 25 + fromIdx * 50;
+            const toY = 25 + toIdx * 50;
+            const angle = Math.atan2(toY - fromY, 150) * 180 / Math.PI;
+            const length = Math.sqrt(150 * 150 + (toY - fromY) * (toY - fromY));
+            return `
+                    <div class="arrow" style="
+                      top: ${fromY}px;
+                      width: ${length}px;
+                      transform: rotate(${angle}deg);
+                    "></div>
+                  `;
+          }).join('')}
+              </div>
+              <div class="set-circle">
+                <div class="set-label">Range</div>
+                ${question.data.range.map((element, i) => `
+                  <div class="set-element" style="left: 50%; top: ${25 + i * 50}px; transform: translateX(-50%);">
+                    ${element}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+            <div class="options">
+              ${question.options.map(option => `
+                <label>
+                  <input type="radio" name="${question.id}" value="${option}" 
+                         ${answers[question.id] === option ? 'checked' : ''}
+                         ${questionSubmitted[question.id] ? 'disabled' : ''}>
+                  ${option}
+                </label>
+              `).join('')}
+            </div>
+          `;
+
+        case 'text-input':
+          return `
+            <input type="text" 
+                   class="function-input"
+                   placeholder="Enter your answer" 
+                   value="${answers[question.id] || ''}"
+                   ${questionSubmitted[question.id] ? 'disabled' : ''}
+                   onchange="handleAnswer('${question.id}', this.value)">
+          `;
+
+        case 'table-to-function':
+          return `
+            <table class="function-table">
+              <tr>
+                <th>x</th>
+                ${question.data.x.map(x => `<td>${x}</td>`).join('')}
+              </tr>
+              <tr>
+                <th>y</th>
+                ${question.data.y.map(y => `<td>${y}</td>`).join('')}
+              </tr>
+            </table>
+            <div class="options">
+              ${question.options.map(option => `
+                <label>
+                  <input type="radio" name="${question.id}" value="${option}" 
+                         ${answers[question.id] === option ? 'checked' : ''}
+                         ${questionSubmitted[question.id] ? 'disabled' : ''}>
+                  ${option}
+                </label>
+              `).join('')}
+            </div>
+          `;
+
+        case 'multi-point-plot':
+    return `
+      <div class="coordinate-plane" id="multi-point-plot" onclick="handlePointPlot(event)">
+        ${Array.from({ length: 19 }).map((_, i) => `
+          <div class="grid-line" style="left: ${i * 20}px; top: 0; bottom: 0; width: 1px;"></div>
+          <div class="grid-line" style="top: ${i * 20}px; left: 0; right: 0; height: 1px;"></div>
+        `).join('')}
+        <div class="axis" style="left: 50%; top: 0; bottom: 0; width: 2px;"></div>
+        <div class="axis" style="top: 50%; left: 0; right: 0; height: 2px;"></div>
+        <svg width="400" height="400" style="position: absolute; top: 0; left: 0; pointer-events: none;">
+          <path id="connection-path" stroke="blue" stroke-width="2" fill="none"/>
+        </svg>
+      </div>
+      <div class="point-list">
+        Points remaining to plot: <span id="remaining-points"></span>
+      </div>
+      <div class="options">
+        ${question.options.map(option => `
+          <label>
+            <input type="radio" name="${question.id}" value="${option}" 
+                   ${answers[question.id]?.selectedOption === option ? 'checked' : ''}
+                   ${questionSubmitted[question.id] ? 'disabled' : ''}>
+            ${option}
+          </label>
+        `).join('')}
+      </div>
+    `;
+        default:
+          return '';
+      }
+    }
+    function handlePointPlot(event) {
+  const question = questions[currentQuestion];
+  if (questionSubmitted[question.id]) return;
+
+  const plane = event.target.closest('.coordinate-plane');
+  if (!plane) return;
+
+  const rect = plane.getBoundingClientRect();
+  const x = Math.round((event.clientX - rect.left - 200) / 20);
+  const y = Math.round(-(event.clientY - rect.top - 200) / 20);
+
+  if (!answers[question.id]) {
+    answers[question.id] = {
+      points: [],
+      selectedOption: null
+    };
+  }
+
+  const currentPoints = answers[question.id].points;
+  if (currentPoints.length < question.pointsToPlot.length) {
+    // Add new point
+    currentPoints.push({ x, y });
+    
+    // Create point element
+    const pointElement = document.createElement('div');
+    pointElement.className = 'point';
+    pointElement.style.left = `${x * 20 + 200}px`;
+    pointElement.style.top = `${-y * 20 + 200}px`;
+    plane.appendChild(pointElement);
+
+    // Update connecting lines
+    const path = document.getElementById('connection-path');
+    if (path && currentPoints.length > 0) {
+      const pathData = currentPoints.map((point, index) => {
+        const px = point.x * 20 + 200;
+        const py = -point.y * 20 + 200;
+        return `${index === 0 ? 'M' : 'L'} ${px} ${py}`;
+      }).join(' ');
+      path.setAttribute('d', pathData);
+    }
+
+    // Update remaining points display
+    updateRemainingPoints(question);
+  }
+}
+
+function updateRemainingPoints(question) {
+  const remainingPointsElement = document.getElementById('remaining-points');
+  if (!remainingPointsElement) return;
+
+  const plotted = answers[question.id]?.points?.length || 0;
+  const remaining = question.pointsToPlot.slice(plotted);
+  remainingPointsElement.textContent = remaining.map(point => 
+    `(${point.x},${point.y})`
+  ).join(', ');
+}
+function showFeedback(isCorrect, explanation) {
+  const feedbackElement = document.getElementById('feedback');
+  feedbackElement.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+  feedbackElement.innerHTML = `
+    ${isCorrect ? '✓ Correct!' : '✗ Incorrect'}<br>
+    ${explanation}
+  `;
+  feedbackElement.style.display = 'block';
+
+  // Disable inputs
+  const questionElement = feedbackElement.closest('.question');
+  questionElement.querySelectorAll('input, .coordinate-plane').forEach(element => {
+    if (element.classList.contains('coordinate-plane')) {
+      element.style.pointerEvents = 'none';
+    } else {
+      element.disabled = true;
+    }
+  });
+
+  // Update question state
+  questionSubmitted[questions[currentQuestion].id] = true;
+  document.querySelector('.submit-btn').disabled = true;
+}
+
+function submitAnswer() {
+  const question = questions[currentQuestion];
+  const answer = answers[question.id];
+  const feedbackElement = document.getElementById('feedback');
+  
+  // Handle different question types
+  switch (question.type) {
+    case 'multi-point-plot':
+      // Check if all points are plotted and a Yes/No option is selected
+      if (!answer || !answer.selectedOption || answer.points.length < question.pointsToPlot.length) {
+        alert('Please plot all points and select Yes/No before submitting.');
+        return;
+      }
+      
+      const isCorrect = answer.selectedOption === question.correctAnswer;
+      showFeedback(isCorrect, question.explanation);
+      break;
+
+    case 'coordinate-plane':
+      // Check if a point has been plotted
+      if (!answer || typeof answer.x === 'undefined' || typeof answer.y === 'undefined') {
+        alert('Please plot a point before submitting.');
+        return;
+      }
+      
+      const pointCorrect = answer.x === question.correctAnswer.x && 
+                          answer.y === question.correctAnswer.y;
+      showFeedback(pointCorrect, question.explanation);
+      break;
+
+    case 'text-input':
+      // Check if an answer has been provided
+      if (!answer || answer.trim() === '') {
+        alert('Please enter your answer before submitting.');
+        return;
+      }
+      
+      const textCorrect = answer.trim() === question.correctAnswer;
+      showFeedback(textCorrect, question.explanation);
+      break;
+
+    case 'multiple-choice':
+    case 'arrow-diagram':
+    case 'table-to-function':
+      // Check if an option has been selected
+      if (!answer) {
+        alert('Please select an answer before submitting.');
+        return;
+      }
+      
+      const mcCorrect = answer === question.correctAnswer;
+      showFeedback(mcCorrect, question.explanation);
+      break;
+
+    case 'relation-representation':
+      // Check if an answer has been provided
+      if (!answer || answer.trim() === '') {
+        alert('Please enter your answer before submitting.');
+        return;
+      }
+      
+      // Remove spaces for more forgiving comparison
+      const cleanAnswer = answer.replace(/\s+/g, '');
+      const cleanCorrect = question.correctAnswer.replace(/\s+/g, '');
+      const relationCorrect = cleanAnswer === cleanCorrect;
+      showFeedback(relationCorrect, question.explanation);
+      break;
+
+    default:
+      if (!answer) {
+        alert('Please provide an answer before submitting.');
+        return;
+      }
+      const defaultCorrect = answer === question.correctAnswer;
+      showFeedback(defaultCorrect, question.explanation);
+  }
+}
+
+function handleRadioChange(event) {
+  const question = questions[currentQuestion];
+  if (!answers[question.id]) {
+    answers[question.id] = {
+      points: [],
+      selectedOption: null
+    };
+  }
+  answers[question.id].selectedOption = event.target.value;
+}
+
+    function handleAnswer(questionId, answer) {
+      const currentQuestionId = questions[currentQuestion].id;
+      answers[currentQuestionId] = answer;
+    }
+
+    function plotPoint(event) {
+      const question = questions[currentQuestion];
+      if (questionSubmitted[question.id]) return;
+
+      const plane = event.target.closest('.coordinate-plane');
+      const rect = plane.getBoundingClientRect();
+      const x = Math.round((event.clientX - rect.left - 200) / 20);
+      const y = Math.round(-(event.clientY - rect.top - 200) / 20);
+
+      // Remove any existing points
+      const existingPoints = plane.querySelectorAll('.point');
+      existingPoints.forEach(point => point.remove());
+
+      // Add new point
+      const point = { x, y };
+      answers[question.id] = point;
+      const pointElement = document.createElement('div');
+      pointElement.className = 'point';
+      pointElement.style.left = `${x * 20 + 200}px`;
+      pointElement.style.top = `${-y * 20 + 200}px`;
+      plane.appendChild(pointElement);
+    }
+
+
+
+      function prevQuestion() {
+        if (currentQuestion > 0) {
+          currentQuestion--;
+          renderQuestion();
+        }
+      }
+
+      function nextQuestion() {
+        if (currentQuestion < questions.length - 1) {
+          currentQuestion++;
+          renderQuestion();
+        }
+      }
+
+      function plotMultiPoint(event) {
+        if (questionSubmitted[questions[currentQuestion].id]) return;
+
+        const plane = event.target.closest('.coordinate-plane');
+        const rect = plane.getBoundingClientRect();
+        const x = Math.round((event.clientX - rect.left - 200) / 20);
+        const y = Math.round(-(event.clientY - rect.top - 200) / 20);
+
+        const userPointsDiv = document.getElementById('user-points');
+        const pointElement = document.createElement('div');
+        pointElement.className = 'user-point';
+        pointElement.style.left = `${x * 20 + 200}px`;
+        pointElement.style.top = `${-y * 20 + 200}px`;
+        userPointsDiv.appendChild(pointElement);
+
+        // Store the points in the answers object as an array
+        if (!answers[questions[currentQuestion].id]) {
+          answers[questions[currentQuestion].id] = [];
+        }
+        answers[questions[currentQuestion].id].push({ x, y });
+      }
+
+      renderQuestion();
+  </script>
+</body>
+
+</html>
