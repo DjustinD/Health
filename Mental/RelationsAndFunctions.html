@@ -270,41 +270,41 @@
     }
 
     .coordinate-plane {
-  position: relative;
-  width: 400px;
-  height: 400px;
-  border: 1px solid #ddd;
-  background-color: #fff;
-  margin: 20px auto;
-  cursor: crosshair;
-}
+      position: relative;
+      width: 400px;
+      height: 400px;
+      border: 1px solid #ddd;
+      background-color: #fff;
+      margin: 20px auto;
+      cursor: crosshair;
+    }
 
-.point {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: #007bff;
-  transform: translate(-50%, -50%);
-}
+    .point {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #007bff;
+      transform: translate(-50%, -50%);
+    }
 
-#remaining-points {
-  font-family: monospace;
-  color: #666;
-}
+    #remaining-points {
+      font-family: monospace;
+      color: #666;
+    }
 
-.point-list {
-  margin: 10px 0;
-  padding: 10px;
-  background-color: #f8f9fa;
-  border-radius: 4px;
-  font-size: 14px;
-}
+    .point-list {
+      margin: 10px 0;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+      font-size: 14px;
+    }
 
-/* Add styles for the connection lines */
-#connection-path {
-  pointer-events: none;
-}
+    /* Add styles for the connection lines */
+    #connection-path {
+      pointer-events: none;
+    }
   </style>
 </head>
 
@@ -312,6 +312,7 @@
   <div class="card">
     <div class="card-header">
       <div class="card-title">Relations and Functions Test</div>
+      <div id="performance-counter" class="mt-2 text-sm text-gray-600">Correct: 0 / Total: 0</div>
     </div>
     <div class="card-content">
       <div id="progress" class="progress"></div>
@@ -332,7 +333,7 @@
         question: 'Which axis is horizontal?',
         options: ['x-axis', 'y-axis'],
         correctAnswer: 'x-axis',
-        explanation: 'The x-axis is always the horizontal axis in a coordinate plane.'
+        explanation: 'The x-axis is always the horizontal axis in a coordinate plane, while the y-axis is in the vertical coordinate plane.'
       },
       {
         id: 'q2',
@@ -355,7 +356,7 @@
         id: 'q4',
         section: 'Relations',
         type: 'relation-representation',
-        question: 'For the digital clock segment relation, represent the following data as a set of ordered pairs: Digits 0-3 with segments: 0→6, 1→2, 2→5, 3→5',
+        question: 'Consider a digital clock that uses 8 segments to display numbers.  Each number can be displayed by lighting up segments in specific locations.  Therefore each number has a relationship to specific segments.  Represent the relationship between numbers and segments as a set of ordered pairs using (number, segments), e.g. (0,6).',
         correctAnswer: '{(0,6), (1,2), (2,5), (3,5)}',
         explanation: 'Each ordered pair represents (digit, number of segments). The order matters and we use parentheses for pairs and curly braces for the set.'
       },
@@ -592,20 +593,20 @@
         explanation: 'This is a function because each student (domain) is assigned to exactly one day (range). Even though Monday has two students, that doesn\'t violate the function definition - we only care that each input has exactly one output.'
       },
       {
-  id: 'q23',
-  section: 'Graph Interpretation',
-  type: 'multi-point-plot',
-  question: 'Plot these points in order and determine if they represent a function: (1,2), (3,4), (5,2), (1,4). After plotting, select whether this represents a function.',
-  pointsToPlot: [
-    { x: 1, y: 2 },
-    { x: 3, y: 4 },
-    { x: 5, y: 2 },
-    { x: 1, y: 4 }
-  ],
-  options: ['Yes', 'No'],
-  correctAnswer: 'No',
-  explanation: 'When plotted, we can see that x=1 maps to both y=2 and y=4. This violates the vertical line test, so this is not a function.'
-},
+        id: 'q23',
+        section: 'Graph Interpretation',
+        type: 'multi-point-plot',
+        question: 'Plot these points in order and determine if they represent a function: (1,2), (3,4), (5,2), (1,4). After plotting, select whether this represents a function.',
+        pointsToPlot: [
+          { x: 1, y: 2 },
+          { x: 3, y: 4 },
+          { x: 5, y: 2 },
+          { x: 1, y: 4 }
+        ],
+        options: ['Yes', 'No'],
+        correctAnswer: 'No',
+        explanation: 'When plotted, we can see that x=1 maps to both y=2 and y=4. This violates the vertical line test, so this is not a function.'
+      },
       {
         id: 'q24',
         section: 'Relations to Sets',
@@ -623,20 +624,20 @@
         explanation: 'We use [ for -3 because it\'s included (≤) and ) for 5 because it\'s not included (<).'
       },
       {
-  id: 'q26',
-  section: 'Interpreting Graphs',
-  type: 'multi-point-plot',  // Changed from coordinate-plane to multi-point-plot
-  question: 'Plot the points (0,0), (1,2), (2,4), (3,6). Then determine what type of function this represents.',
-  pointsToPlot: [
-    { x: 0, y: 0 },
-    { x: 1, y: 2 },
-    { x: 2, y: 4 },
-    { x: 3, y: 6 }
-  ],
-  options: ['Linear function', 'Quadratic function', 'Exponential function', 'Not a function'],
-  correctAnswer: 'Linear function',
-  explanation: 'When plotted, these points form a straight line with a constant slope of 2 (y increases by 2 for each increase of 1 in x). This is characteristic of a linear function.'
-},
+        id: 'q26',
+        section: 'Interpreting Graphs',
+        type: 'multi-point-plot',  // Changed from coordinate-plane to multi-point-plot
+        question: 'Plot the points (0,0), (1,2), (2,4), (3,6). Then determine what type of function this represents.',
+        pointsToPlot: [
+          { x: 0, y: 0 },
+          { x: 1, y: 2 },
+          { x: 2, y: 4 },
+          { x: 3, y: 6 }
+        ],
+        options: ['Linear function', 'Quadratic function', 'Exponential function', 'Not a function'],
+        correctAnswer: 'Linear function',
+        explanation: 'When plotted, these points form a straight line with a constant slope of 2 (y increases by 2 for each increase of 1 in x). This is characteristic of a linear function.'
+      },
       {
         id: 'q27',
         section: 'Natural Numbers',
@@ -918,11 +919,21 @@
         question: 'Plot the points (-2,4), (-1,1), (0,0), (1,1), (2,4). What is the range of this relation?',
         correctAnswer: '[0,4]',
         explanation: 'When plotted, these points form a parabola. The y-values start at 4, decrease to 0, then increase back to 4. Therefore, the range includes all numbers from 0 to 4, inclusive.'
+      },
+      {
+        id: 'q51',
+        section: 'Coordinate Plane Basics',
+        type: 'multiple-choice',
+        question: 'Which axis is vertical?',
+        options: ['x-axis', 'y-axis'],
+        correctAnswer: 'y-axis',
+        explanation: 'The y-axis is the vertical axis on a coordinate plane, while the x-axis is the horizontal axis.'
       }
     ];
     let currentQuestion = 0;
     let answers = {};
     let questionSubmitted = {};
+    let correctAnswers = 0;
 
     function renderQuestion() {
       const question = questions[currentQuestion];
@@ -968,8 +979,8 @@
       document.querySelector('.nav-btn.prev').disabled = currentQuestion === 0;
       document.querySelector('.nav-btn.next').disabled = currentQuestion === questions.length - 1;
       document.querySelectorAll(`input[name="${question.id}"]`).forEach(radio => {
-  radio.addEventListener('change', handleRadioChange);
-});
+        radio.addEventListener('change', handleRadioChange);
+      });
     }
 
     function renderQuestionContent(question) {
@@ -1090,7 +1101,7 @@
           `;
 
         case 'multi-point-plot':
-    return `
+          return `
       <div class="coordinate-plane" id="multi-point-plot" onclick="handlePointPlot(event)">
         ${Array.from({ length: 19 }).map((_, i) => `
           <div class="grid-line" style="left: ${i * 20}px; top: 0; bottom: 0; width: 1px;"></div>
@@ -1121,173 +1132,184 @@
       }
     }
     function handlePointPlot(event) {
-  const question = questions[currentQuestion];
-  if (questionSubmitted[question.id]) return;
+      const question = questions[currentQuestion];
+      if (questionSubmitted[question.id]) return;
 
-  const plane = event.target.closest('.coordinate-plane');
-  if (!plane) return;
+      const plane = event.target.closest('.coordinate-plane');
+      if (!plane) return;
 
-  const rect = plane.getBoundingClientRect();
-  const x = Math.round((event.clientX - rect.left - 200) / 20);
-  const y = Math.round(-(event.clientY - rect.top - 200) / 20);
+      const rect = plane.getBoundingClientRect();
+      const x = Math.round((event.clientX - rect.left - 200) / 20);
+      const y = Math.round(-(event.clientY - rect.top - 200) / 20);
 
-  if (!answers[question.id]) {
-    answers[question.id] = {
-      points: [],
-      selectedOption: null
-    };
-  }
+      if (!answers[question.id]) {
+        answers[question.id] = {
+          points: [],
+          selectedOption: null
+        };
+      }
 
-  const currentPoints = answers[question.id].points;
-  if (currentPoints.length < question.pointsToPlot.length) {
-    // Add new point
-    currentPoints.push({ x, y });
+      const currentPoints = answers[question.id].points;
+      if (currentPoints.length < question.pointsToPlot.length) {
+        // Add new point
+        currentPoints.push({ x, y });
+
+        // Create point element
+        const pointElement = document.createElement('div');
+        pointElement.className = 'point';
+        pointElement.style.left = `${x * 20 + 200}px`;
+        pointElement.style.top = `${-y * 20 + 200}px`;
+        plane.appendChild(pointElement);
+
+        // Update connecting lines
+        const path = document.getElementById('connection-path');
+        if (path && currentPoints.length > 0) {
+          const pathData = currentPoints.map((point, index) => {
+            const px = point.x * 20 + 200;
+            const py = -point.y * 20 + 200;
+            return `${index === 0 ? 'M' : 'L'} ${px} ${py}`;
+          }).join(' ');
+          path.setAttribute('d', pathData);
+        }
+
+        // Update remaining points display
+        updateRemainingPoints(question);
+      }
+    }
+
+    function updateRemainingPoints(question) {
+      const remainingPointsElement = document.getElementById('remaining-points');
+      if (!remainingPointsElement) return;
+
+      const plotted = answers[question.id]?.points?.length || 0;
+      const remaining = question.pointsToPlot.slice(plotted);
+      remainingPointsElement.textContent = remaining.map(point =>
+        `(${point.x},${point.y})`
+      ).join(', ');
+    }
+    function updatePerformanceCounter() {
+      const counter = document.getElementById('performance-counter');
+      counter.textContent = `Correct: ${correctAnswers} / Total: ${Object.keys(questionSubmitted).length}`;
+    }
+
+    function showFeedback(isCorrect, explanation) {
+          const feedbackElement = document.getElementById('feedback');
+          feedbackElement.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+          feedbackElement.innerHTML = `
+        ${isCorrect ? '✓ Correct!' : '✗ Incorrect'}<br>
+        ${explanation}
+      `;
+          feedbackElement.style.display = 'block';
     
-    // Create point element
-    const pointElement = document.createElement('div');
-    pointElement.className = 'point';
-    pointElement.style.left = `${x * 20 + 200}px`;
-    pointElement.style.top = `${-y * 20 + 200}px`;
-    plane.appendChild(pointElement);
+          // Disable inputs
+          const questionElement = feedbackElement.closest('.question');
+          questionElement.querySelectorAll('input, .coordinate-plane').forEach(element => {
+            if (element.classList.contains('coordinate-plane')) {
+              element.style.pointerEvents = 'none';
+            } else {
+              element.disabled = true;
+            }
+          });
+    
+          // Update question state
+          questionSubmitted[questions[currentQuestion].id] = true;
+          document.querySelector('.submit-btn').disabled = true;
+    
+          // Increment correct answers and update performance counter
+          if (isCorrect) {
+            correctAnswers++;
+          }
+          updatePerformanceCounter();
+        }
 
-    // Update connecting lines
-    const path = document.getElementById('connection-path');
-    if (path && currentPoints.length > 0) {
-      const pathData = currentPoints.map((point, index) => {
-        const px = point.x * 20 + 200;
-        const py = -point.y * 20 + 200;
-        return `${index === 0 ? 'M' : 'L'} ${px} ${py}`;
-      }).join(' ');
-      path.setAttribute('d', pathData);
+    function submitAnswer() {
+      const question = questions[currentQuestion];
+      const answer = answers[question.id];
+      const feedbackElement = document.getElementById('feedback');
+
+      // Handle different question types
+      switch (question.type) {
+        case 'multi-point-plot':
+          // Check if all points are plotted and a Yes/No option is selected
+          if (!answer || !answer.selectedOption || answer.points.length < question.pointsToPlot.length) {
+            alert('Please plot all points and select Yes/No before submitting.');
+            return;
+          }
+
+          const isCorrect = answer.selectedOption === question.correctAnswer;
+          showFeedback(isCorrect, question.explanation);
+          break;
+
+        case 'coordinate-plane':
+          // Check if a point has been plotted
+          if (!answer || typeof answer.x === 'undefined' || typeof answer.y === 'undefined') {
+            alert('Please plot a point before submitting.');
+            return;
+          }
+
+          const pointCorrect = answer.x === question.correctAnswer.x &&
+            answer.y === question.correctAnswer.y;
+          showFeedback(pointCorrect, question.explanation);
+          break;
+
+        case 'text-input':
+          // Check if an answer has been provided
+          if (!answer || answer.trim() === '') {
+            alert('Please enter your answer before submitting.');
+            return;
+          }
+
+          const textCorrect = answer.trim() === question.correctAnswer;
+          showFeedback(textCorrect, question.explanation);
+          break;
+
+        case 'multiple-choice':
+        case 'arrow-diagram':
+        case 'table-to-function':
+          // Check if an option has been selected
+          if (!answer) {
+            alert('Please select an answer before submitting.');
+            return;
+          }
+
+          const mcCorrect = answer === question.correctAnswer;
+          showFeedback(mcCorrect, question.explanation);
+          break;
+
+        case 'relation-representation':
+          // Check if an answer has been provided
+          if (!answer || answer.trim() === '') {
+            alert('Please enter your answer before submitting.');
+            return;
+          }
+
+          // Remove spaces for more forgiving comparison
+          const cleanAnswer = answer.replace(/\s+/g, '');
+          const cleanCorrect = question.correctAnswer.replace(/\s+/g, '');
+          const relationCorrect = cleanAnswer === cleanCorrect;
+          showFeedback(relationCorrect, question.explanation);
+          break;
+
+        default:
+          if (!answer) {
+            alert('Please provide an answer before submitting.');
+            return;
+          }
+          const defaultCorrect = answer === question.correctAnswer;
+          showFeedback(defaultCorrect, question.explanation);
+      }
     }
 
-    // Update remaining points display
-    updateRemainingPoints(question);
-  }
-}
-
-function updateRemainingPoints(question) {
-  const remainingPointsElement = document.getElementById('remaining-points');
-  if (!remainingPointsElement) return;
-
-  const plotted = answers[question.id]?.points?.length || 0;
-  const remaining = question.pointsToPlot.slice(plotted);
-  remainingPointsElement.textContent = remaining.map(point => 
-    `(${point.x},${point.y})`
-  ).join(', ');
-}
-function showFeedback(isCorrect, explanation) {
-  const feedbackElement = document.getElementById('feedback');
-  feedbackElement.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
-  feedbackElement.innerHTML = `
-    ${isCorrect ? '✓ Correct!' : '✗ Incorrect'}<br>
-    ${explanation}
-  `;
-  feedbackElement.style.display = 'block';
-
-  // Disable inputs
-  const questionElement = feedbackElement.closest('.question');
-  questionElement.querySelectorAll('input, .coordinate-plane').forEach(element => {
-    if (element.classList.contains('coordinate-plane')) {
-      element.style.pointerEvents = 'none';
-    } else {
-      element.disabled = true;
+    function handleRadioChange(event) {
+      const question = questions[currentQuestion];
+      if (!answers[question.id]) {
+        answers[question.id] = {
+          points: [],
+          selectedOption: null
+        };
+      }
+      answers[question.id].selectedOption = event.target.value;
     }
-  });
-
-  // Update question state
-  questionSubmitted[questions[currentQuestion].id] = true;
-  document.querySelector('.submit-btn').disabled = true;
-}
-
-function submitAnswer() {
-  const question = questions[currentQuestion];
-  const answer = answers[question.id];
-  const feedbackElement = document.getElementById('feedback');
-  
-  // Handle different question types
-  switch (question.type) {
-    case 'multi-point-plot':
-      // Check if all points are plotted and a Yes/No option is selected
-      if (!answer || !answer.selectedOption || answer.points.length < question.pointsToPlot.length) {
-        alert('Please plot all points and select Yes/No before submitting.');
-        return;
-      }
-      
-      const isCorrect = answer.selectedOption === question.correctAnswer;
-      showFeedback(isCorrect, question.explanation);
-      break;
-
-    case 'coordinate-plane':
-      // Check if a point has been plotted
-      if (!answer || typeof answer.x === 'undefined' || typeof answer.y === 'undefined') {
-        alert('Please plot a point before submitting.');
-        return;
-      }
-      
-      const pointCorrect = answer.x === question.correctAnswer.x && 
-                          answer.y === question.correctAnswer.y;
-      showFeedback(pointCorrect, question.explanation);
-      break;
-
-    case 'text-input':
-      // Check if an answer has been provided
-      if (!answer || answer.trim() === '') {
-        alert('Please enter your answer before submitting.');
-        return;
-      }
-      
-      const textCorrect = answer.trim() === question.correctAnswer;
-      showFeedback(textCorrect, question.explanation);
-      break;
-
-    case 'multiple-choice':
-    case 'arrow-diagram':
-    case 'table-to-function':
-      // Check if an option has been selected
-      if (!answer) {
-        alert('Please select an answer before submitting.');
-        return;
-      }
-      
-      const mcCorrect = answer === question.correctAnswer;
-      showFeedback(mcCorrect, question.explanation);
-      break;
-
-    case 'relation-representation':
-      // Check if an answer has been provided
-      if (!answer || answer.trim() === '') {
-        alert('Please enter your answer before submitting.');
-        return;
-      }
-      
-      // Remove spaces for more forgiving comparison
-      const cleanAnswer = answer.replace(/\s+/g, '');
-      const cleanCorrect = question.correctAnswer.replace(/\s+/g, '');
-      const relationCorrect = cleanAnswer === cleanCorrect;
-      showFeedback(relationCorrect, question.explanation);
-      break;
-
-    default:
-      if (!answer) {
-        alert('Please provide an answer before submitting.');
-        return;
-      }
-      const defaultCorrect = answer === question.correctAnswer;
-      showFeedback(defaultCorrect, question.explanation);
-  }
-}
-
-function handleRadioChange(event) {
-  const question = questions[currentQuestion];
-  if (!answers[question.id]) {
-    answers[question.id] = {
-      points: [],
-      selectedOption: null
-    };
-  }
-  answers[question.id].selectedOption = event.target.value;
-}
 
     function handleAnswer(questionId, answer) {
       const currentQuestionId = questions[currentQuestion].id;
@@ -1319,43 +1341,43 @@ function handleRadioChange(event) {
 
 
 
-      function prevQuestion() {
-        if (currentQuestion > 0) {
-          currentQuestion--;
-          renderQuestion();
-        }
+    function prevQuestion() {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        renderQuestion();
       }
+    }
 
-      function nextQuestion() {
-        if (currentQuestion < questions.length - 1) {
-          currentQuestion++;
-          renderQuestion();
-        }
+    function nextQuestion() {
+      if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        renderQuestion();
       }
+    }
 
-      function plotMultiPoint(event) {
-        if (questionSubmitted[questions[currentQuestion].id]) return;
+    function plotMultiPoint(event) {
+      if (questionSubmitted[questions[currentQuestion].id]) return;
 
-        const plane = event.target.closest('.coordinate-plane');
-        const rect = plane.getBoundingClientRect();
-        const x = Math.round((event.clientX - rect.left - 200) / 20);
-        const y = Math.round(-(event.clientY - rect.top - 200) / 20);
+      const plane = event.target.closest('.coordinate-plane');
+      const rect = plane.getBoundingClientRect();
+      const x = Math.round((event.clientX - rect.left - 200) / 20);
+      const y = Math.round(-(event.clientY - rect.top - 200) / 20);
 
-        const userPointsDiv = document.getElementById('user-points');
-        const pointElement = document.createElement('div');
-        pointElement.className = 'user-point';
-        pointElement.style.left = `${x * 20 + 200}px`;
-        pointElement.style.top = `${-y * 20 + 200}px`;
-        userPointsDiv.appendChild(pointElement);
+      const userPointsDiv = document.getElementById('user-points');
+      const pointElement = document.createElement('div');
+      pointElement.className = 'user-point';
+      pointElement.style.left = `${x * 20 + 200}px`;
+      pointElement.style.top = `${-y * 20 + 200}px`;
+      userPointsDiv.appendChild(pointElement);
 
-        // Store the points in the answers object as an array
-        if (!answers[questions[currentQuestion].id]) {
-          answers[questions[currentQuestion].id] = [];
-        }
-        answers[questions[currentQuestion].id].push({ x, y });
+      // Store the points in the answers object as an array
+      if (!answers[questions[currentQuestion].id]) {
+        answers[questions[currentQuestion].id] = [];
       }
+      answers[questions[currentQuestion].id].push({ x, y });
+    }
 
-      renderQuestion();
+    renderQuestion();
   </script>
 </body>
 
